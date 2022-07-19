@@ -104,6 +104,11 @@ foreach $k (@pure) {
     $pure{$k} = 1;
 }
 
+@glue = qw (mpfr_set_str);
+foreach $k (@glue) {
+    $glue{$k} = 1;
+}
+
 @oper = qw(add sub mul div pow);
 $opinter{"add"} = '+';
 $opinter{"sub"} = '-';
@@ -265,6 +270,7 @@ LINE: while (<>) {
     print CBIND "    end ", $xname, "\n";
     print CBIND "#endif\n\n" if $is_float128 || $is_long_double;
 
+    &write_glue if (exists($glue{$name}));
     (undef, $part1, $part2, $part3) = split("_", $name);
     if (exists($compare{$part1})) {
 	&handle_compare ($part1);
@@ -344,6 +350,7 @@ sub handle_stuff
     my($stem) = $part1 . (defined($part2) ? "_$part2" : "");
     my (@mpfr_ops, @prec_ops, $i_stuff, $i_rnd);
 
+    &write_glue;
     $olines .= "    elemental function fun_$stem (" . join (", ",@vars[1..$#vars]) .
 	") result (" . $vars[0] . ")\n";
     for $i (1..$#vars) {
@@ -411,7 +418,6 @@ EOF
     $olines .= $fbody;
     $olines .= "    end function op_$stem\n\n";
     push (@{$opint{$op}}, "    module procedure op_$stem\n");
-    &write_glue;
     return unless defined $part2;
     if ($part1 eq "si" or $part2 eq "si") {
 	$olines .= "#if SIZEOF_INT < SIZEOF_LONG\n";
@@ -445,6 +451,7 @@ EOF
 sub handle_intrinsic
 {
     @mpfr_ops = ();
+    &write_glue;
     $olines .= "  elemental function fun_$op (" . join(", ", @vars[1..$#vars]) .
 	") result (" . $vars[0] . ")\n";
     for $i (1..$#vars) {
@@ -494,7 +501,6 @@ EOF
     $olines .= join (", ", @alist) . ")\n";
     $olines .= "  end function fun_$op\n\n";
     push (@{$funint{$op}}, "    module procedure fun_$part1\n");
-    &write_glue;
 }
 
 # For functions which have "long int" arguments, for example, we want
@@ -610,6 +616,7 @@ sub handle_rop_assign
 {
     my($stem) = $part1 . (defined($part2) ? "_$part2" : "");
     my($nlines) = "";
+    &write_glue;
     $nlines .= "#if USE_FLOAT128\n" if $is_float128;
     $nlines .= "#if USE_LONG_DOUBLE\n" if $is_long_double;
 
@@ -645,7 +652,7 @@ sub handle_rop_assign
         $vars[0]%initialized = .true.
       end if
 EOF
-    $nlines .= "      rc = $name (";
+    $nlines .= "      call f$name (";
     my (@alist);
     for $i (0..$#argtypes) {
 	if ($argtypes[$i] eq "mpfr_t") {
@@ -674,14 +681,13 @@ EOF
 	$nlines .= "      ". $ftype{$argtypes[$i]} . ", intent(in) :: ". $vars[$i] . "\n";
     }
     $nlines .= <<"EOF";
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 ($vars[0]%mp, default_prec)
         $vars[0]%initialized = .true.
       end if
 EOF
-    $nlines .= "      rc = $name (" . join(", ",@alist[0..$#alist-1],"default_rnd") . ")\n";
+    $nlines .= "      call f$name (" . join(", ",@alist[0..$#alist-1],"default_rnd") . ")\n";
     $nlines .= "    end subroutine ass_$stem\n\n";
     $nlines .= "#endif\n" if $is_float128 || $is_long_double;
     # print $nlines;
@@ -721,16 +727,16 @@ sub conv_type_ass
     type (fmpfr), intent(inout) :: rop
     $ftype{$to}, intent(in) :: op
     $ftype{$from} :: tmp_op;
-    integer :: rc
 
     tmp_op = op;
     if (.not. rop%initialized) then
       call mpfr_init2 (rop%mp, default_prec)
       rop%initialized = .true.
     end if
-    rc = $name (rop%mp, tmp_op, default_rnd)
+    call f$name (rop%mp, tmp_op, default_rnd)
   end subroutine $xname
 EOF
+	
     $olines .= $nlines;
     push (@assint, "    module procedure $xname\n");
 }
@@ -812,7 +818,7 @@ sub misc_routines
     type (fmpfr) :: rop
     character(kind=c_char,len=*), intent(in) :: s
     integer (kind=kind(c_int)), intent(in), optional :: rnd
-    integer :: rc
+    integer, volatile :: rc
     integer :: rnd_val
     character(kind=c_char), dimension(:), allocatable, target :: s_arg
     rnd_val = default_rnd
@@ -825,7 +831,7 @@ sub misc_routines
     allocate (s_arg(len(s)+1))
     s_arg(1:len(s)) = transfer(s,s_arg)
     s_arg(len(s)+1) = char(0)
-    rc = mpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
     deallocate (s_arg)
   end function fun_set_str
 
@@ -881,7 +887,7 @@ sub misc_routines
       call mpfr_init2 (rop%mp, default_prec)
       rop%initialized = .true.
     end if
-    rc = mpfr_set (rop%mp, op%mp, default_rnd)    
+    call fmpfr_set (rop%mp, op%mp, default_rnd)    
   end subroutine ass_set
 
   elemental subroutine fmpfr_cleanup (self)
@@ -952,31 +958,31 @@ EOF
 }
 sub write_glue
 {
+    my ($intent) = @_;
+    $intent = "intent(out)" unless defined($intent);
     my (@a, $fg, $fname, $at);
-    print CGLUE "void f$name (";
+    $fname = "f" . $name;
+    print CGLUE "void $fname (";
     for my $i (0..$#argtypes) {
 	push (@a, $argtypes[$i] . " " . $vars[$i]);
     }
     print CGLUE join(", ",@a),")\n{\n";
     print CGLUE "  $name (", join(", ",@vars),");\n";
     print CGLUE "}\n\n";
-    $fname = "f" . $name;
     $fg = "";
     $fg .= "#if USE_FLOAT128\n" if $is_float128;
     $fg .= "#if USE_LONG_DOUBLE\n" if $is_long_double;
     $fg .= "    pure subroutine $fname (" . join(", ",@vars) . ") bind(c)\n";
     $fg .= "      import\n";
-    $fg .= "      " . $atype{$argtypes[0]} . ", intent(out) :: " . $vars[0] . "\n";
-    for $i (1..$#argtypes-1) {
+    $fg .= "      " . $atype{$argtypes[0]} . ", $intent :: " . $vars[0] . "\n";
+    for $i (1..$#argtypes) {
 	$at = $atype{$argtypes[$i]};
 	$fg .= "      $at";
 	$fg .= ", intent(in) " unless $at =~ m/value/;
 	$fg .= ":: " . $vars[$i] . "\n";
     }
-    $fg .= "      " . $atype{$argtypes[$#argtypes]} . " :: "
-	. $vars[$#argtypes] . "\n";
     $fg .= "    end subroutine $fname\n\n";
-    $fg .= "#endif" if $is_float128 || $is_long_double;
+    $fg .= "#endif\n" if $is_float128 || $is_long_double;
     $fglue .= $fg;
 }
 
@@ -984,6 +990,8 @@ sub handle_compare
 {
     my($comparison) = @_;
     my ($nlines, $xname, $operator);
+
+    &write_glue ("intent(in)");
 
     $xname = $comparison . "_p";
     $operator = $compare{$comparison};
@@ -993,7 +1001,7 @@ sub handle_compare
       logical :: ret
       integer :: rc
 
-      rc = $name (op1%mp, op2%mp)
+      call f$name (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else

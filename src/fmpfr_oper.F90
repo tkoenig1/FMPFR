@@ -49,12 +49,66 @@ module fmpfr_oper
   end interface
 
   interface
+    pure subroutine fmpfr_set (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      type (mpfr_t), intent(in) :: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set
+
+    pure subroutine fmpfr_set_si (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      integer (c_long), value:: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_si
+
+    pure subroutine fmpfr_set_flt (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      real (c_float), value:: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_flt
+
+    pure subroutine fmpfr_set_d (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      real (c_double), value:: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_d
+
+#if USE_LONG_DOUBLE
+    pure subroutine fmpfr_set_ld (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      real (c_long_double), value:: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_ld
+
+#endif
+#if USE_FLOAT128
+    pure subroutine fmpfr_set_float128 (rop, op, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      real (qp), value:: op
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_float128
+
+#endif
+    pure subroutine fmpfr_set_str (rop, s, base, rnd) bind(c)
+      import
+      type (mpfr_t), intent(out) :: rop
+      type (c_ptr), value:: s
+      integer (c_int), value:: base
+      integer (c_int), value:: rnd
+    end subroutine fmpfr_set_str
+
     pure subroutine fmpfr_add (rop, op1, op2, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_add
 
     pure subroutine fmpfr_add_si (rop, op1, op2, rnd) bind(c)
@@ -62,7 +116,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       integer (c_long), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_add_si
 
     pure subroutine fmpfr_add_d (rop, op1, op2, rnd) bind(c)
@@ -70,7 +124,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       real (c_double), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_add_d
 
     pure subroutine fmpfr_sub (rop, op1, op2, rnd) bind(c)
@@ -78,7 +132,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_sub
 
     pure subroutine fmpfr_si_sub (rop, op1, op2, rnd) bind(c)
@@ -86,7 +140,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       integer (c_long), value:: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_si_sub
 
     pure subroutine fmpfr_sub_si (rop, op1, op2, rnd) bind(c)
@@ -94,7 +148,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       integer (c_long), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_sub_si
 
     pure subroutine fmpfr_d_sub (rop, op1, op2, rnd) bind(c)
@@ -102,7 +156,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       real (c_double), value:: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_d_sub
 
     pure subroutine fmpfr_sub_d (rop, op1, op2, rnd) bind(c)
@@ -110,7 +164,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       real (c_double), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_sub_d
 
     pure subroutine fmpfr_mul (rop, op1, op2, rnd) bind(c)
@@ -118,7 +172,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_mul
 
     pure subroutine fmpfr_mul_si (rop, op1, op2, rnd) bind(c)
@@ -126,7 +180,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       integer (c_long), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_mul_si
 
     pure subroutine fmpfr_mul_d (rop, op1, op2, rnd) bind(c)
@@ -134,7 +188,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       real (c_double), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_mul_d
 
     pure subroutine fmpfr_div (rop, op1, op2, rnd) bind(c)
@@ -142,7 +196,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_div
 
     pure subroutine fmpfr_si_div (rop, op1, op2, rnd) bind(c)
@@ -150,7 +204,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       integer (c_long), value:: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_si_div
 
     pure subroutine fmpfr_div_si (rop, op1, op2, rnd) bind(c)
@@ -158,7 +212,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       integer (c_long), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_div_si
 
     pure subroutine fmpfr_d_div (rop, op1, op2, rnd) bind(c)
@@ -166,7 +220,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       real (c_double), value:: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_d_div
 
     pure subroutine fmpfr_div_d (rop, op1, op2, rnd) bind(c)
@@ -174,42 +228,78 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       real (c_double), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_div_d
 
     pure subroutine fmpfr_sqrt (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_sqrt
 
     pure subroutine fmpfr_abs (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_abs
+
+    pure subroutine fmpfr_greater_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_greater_p
+
+    pure subroutine fmpfr_greaterequal_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_greaterequal_p
+
+    pure subroutine fmpfr_less_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_less_p
+
+    pure subroutine fmpfr_lessequal_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_lessequal_p
+
+    pure subroutine fmpfr_equal_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_equal_p
+
+    pure subroutine fmpfr_lessgreater_p (op1, op2) bind(c)
+      import
+      type (mpfr_t), intent(in) :: op1
+      type (mpfr_t), intent(in) :: op2
+    end subroutine fmpfr_lessgreater_p
 
     pure subroutine fmpfr_log (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_log
 
     pure subroutine fmpfr_log10 (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_log10
 
     pure subroutine fmpfr_exp (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_exp
 
     pure subroutine fmpfr_pow (rop, op1, op2, rnd) bind(c)
@@ -217,7 +307,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_pow
 
     pure subroutine fmpfr_pow_si (rop, op1, op2, rnd) bind(c)
@@ -225,49 +315,49 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       integer (c_long), value:: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_pow_si
 
     pure subroutine fmpfr_cos (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_cos
 
     pure subroutine fmpfr_sin (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_sin
 
     pure subroutine fmpfr_tan (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_tan
 
     pure subroutine fmpfr_acos (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_acos
 
     pure subroutine fmpfr_asin (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_asin
 
     pure subroutine fmpfr_atan (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_atan
 
     pure subroutine fmpfr_atan2 (rop, y, x, rnd) bind(c)
@@ -275,14 +365,14 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: y
       type (mpfr_t), intent(in) :: x
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_atan2
 
     pure subroutine fmpfr_gamma (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_gamma
 
     pure subroutine fmpfr_min (rop, op1, op2, rnd) bind(c)
@@ -290,7 +380,7 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_min
 
     pure subroutine fmpfr_max (rop, op1, op2, rnd) bind(c)
@@ -298,25 +388,10 @@ module fmpfr_oper
       type (mpfr_t), intent(out) :: rop
       type (mpfr_t), intent(in) :: op1
       type (mpfr_t), intent(in) :: op2
-      integer (c_int), value :: rnd
+      integer (c_int), value:: rnd
     end subroutine fmpfr_max
 
   end interface
-  public :: pow
-  interface pow
-    module procedure fun_pow
-    module procedure fun_pow_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_pow_si_int
-#endif
-    module procedure fun_pow_si_short
-  end interface pow
-
-  public :: atan
-  interface atan
-    module procedure fun_atan
-  end interface atan
-
   public :: sub
   interface sub
     module procedure fun_sub
@@ -335,6 +410,100 @@ module fmpfr_oper
     module procedure fun_sub_d
     module procedure fun_sub_d_float
   end interface sub
+
+  public :: add
+  interface add
+    module procedure fun_add
+    module procedure fun_add_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure fun_add_si_int
+#endif
+    module procedure fun_add_si_short
+    module procedure fun_add_d
+    module procedure fun_add_d_float
+  end interface add
+
+  public :: asin
+  interface asin
+    module procedure fun_asin
+  end interface asin
+
+  public :: init
+  interface init
+    module procedure init_long
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure init_int
+#endif
+    module procedure init_short
+    module procedure init_default
+  end interface init
+
+  public :: atan
+  interface atan
+    module procedure fun_atan
+  end interface atan
+
+  public :: abs
+  interface abs
+    module procedure fun_abs
+  end interface abs
+
+  public :: pow
+  interface pow
+    module procedure fun_pow
+    module procedure fun_pow_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure fun_pow_si_int
+#endif
+    module procedure fun_pow_si_short
+  end interface pow
+
+  public :: atan2
+  interface atan2
+    module procedure fun_atan2
+  end interface atan2
+
+  public :: cos
+  interface cos
+    module procedure fun_cos
+  end interface cos
+
+  public :: sin
+  interface sin
+    module procedure fun_sin
+  end interface sin
+
+  public :: exp
+  interface exp
+    module procedure fun_exp
+  end interface exp
+
+  public :: mul
+  interface mul
+    module procedure fun_mul
+    module procedure fun_mul_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure fun_mul_si_int
+#endif
+    module procedure fun_mul_si_short
+    module procedure fun_mul_d
+    module procedure fun_mul_d_float
+  end interface mul
+
+  public :: sqrt
+  interface sqrt
+    module procedure fun_sqrt
+  end interface sqrt
+
+  public :: gamma
+  interface gamma
+    module procedure fun_gamma
+  end interface gamma
+
+  public :: log
+  interface log
+    module procedure fun_log
+  end interface log
 
   public :: div
   interface div
@@ -355,94 +524,15 @@ module fmpfr_oper
     module procedure fun_div_d_float
   end interface div
 
-  public :: tan
-  interface tan
-    module procedure fun_tan
-  end interface tan
-
-  public :: abs
-  interface abs
-    module procedure fun_abs
-  end interface abs
-
   public :: max
   interface max
     module procedure fun_max
   end interface max
 
-  public :: init
-  interface init
-    module procedure init_long
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure init_int
-#endif
-    module procedure init_short
-    module procedure init_default
-  end interface init
-
-  public :: sin
-  interface sin
-    module procedure fun_sin
-  end interface sin
-
-  public :: atan2
-  interface atan2
-    module procedure fun_atan2
-  end interface atan2
-
-  public :: gamma
-  interface gamma
-    module procedure fun_gamma
-  end interface gamma
-
-  public :: acos
-  interface acos
-    module procedure fun_acos
-  end interface acos
-
-  public :: exp
-  interface exp
-    module procedure fun_exp
-  end interface exp
-
-  public :: cos
-  interface cos
-    module procedure fun_cos
-  end interface cos
-
-  public :: set_default_prec
-  interface set_default_prec
-    module procedure set_default_prec_long
-    module procedure set_default_prec_int
-    module procedure set_default_prec_short
-  end interface set_default_prec
-
-  public :: mul
-  interface mul
-    module procedure fun_mul
-    module procedure fun_mul_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_mul_si_int
-#endif
-    module procedure fun_mul_si_short
-    module procedure fun_mul_d
-    module procedure fun_mul_d_float
-  end interface mul
-
-  public :: sqrt
-  interface sqrt
-    module procedure fun_sqrt
-  end interface sqrt
-
   public :: min
   interface min
     module procedure fun_min
   end interface min
-
-  public :: log
-  interface log
-    module procedure fun_log
-  end interface log
 
   public :: fmpfr
   interface fmpfr
@@ -458,46 +548,27 @@ module fmpfr_oper
   module procedure fun_set_str
   end interface fmpfr
 
-  public :: add
-  interface add
-    module procedure fun_add
-    module procedure fun_add_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_add_si_int
-#endif
-    module procedure fun_add_si_short
-    module procedure fun_add_d
-    module procedure fun_add_d_float
-  end interface add
+  public :: tan
+  interface tan
+    module procedure fun_tan
+  end interface tan
 
-  public :: asin
-  interface asin
-    module procedure fun_asin
-  end interface asin
+  public :: acos
+  interface acos
+    module procedure fun_acos
+  end interface acos
+
+  public :: set_default_prec
+  interface set_default_prec
+    module procedure set_default_prec_long
+    module procedure set_default_prec_int
+    module procedure set_default_prec_short
+  end interface set_default_prec
 
   public :: log10
   interface log10
     module procedure fun_log10
   end interface log10
-
-  public :: operator (-)
-  interface operator (-)
-    module procedure op_sub
-    module procedure op_si_sub
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_si_sub_int
-#endif
-    module procedure op_si_sub_short
-    module procedure op_sub_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_sub_si_int
-#endif
-    module procedure op_sub_si_short
-    module procedure op_d_sub
-    module procedure op_d_sub_float
-    module procedure op_sub_d
-    module procedure op_sub_d_float
-  end interface operator (-)
 
   public :: operator (*)
   interface operator (*)
@@ -518,35 +589,6 @@ module fmpfr_oper
     module procedure op_d_mul_float
   end interface operator (*)
 
-  public :: operator (+)
-  interface operator (+)
-    module procedure op_add
-    module procedure op_add_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_add_si_int
-#endif
-    module procedure op_add_si_short
-    module procedure op_si_add
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_si_add_int
-#endif
-    module procedure op_si_add_short
-    module procedure op_add_d
-    module procedure op_add_d_float
-    module procedure op_d_add
-    module procedure op_d_add_float
-  end interface operator (+)
-
-  public :: operator (**)
-  interface operator (**)
-    module procedure op_pow
-    module procedure op_pow_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_pow_si_int
-#endif
-    module procedure op_pow_si_short
-  end interface operator (**)
-
   public :: operator (/)
   interface operator (/)
     module procedure op_div
@@ -566,24 +608,57 @@ module fmpfr_oper
     module procedure op_div_d_float
   end interface operator (/)
 
-  public :: operator (>=)
-  interface operator (>=)
-    module procedure greaterequal_p
-  end interface
+  public :: operator (+)
+  interface operator (+)
+    module procedure op_add
+    module procedure op_add_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_add_si_int
+#endif
+    module procedure op_add_si_short
+    module procedure op_si_add
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_si_add_int
+#endif
+    module procedure op_si_add_short
+    module procedure op_add_d
+    module procedure op_add_d_float
+    module procedure op_d_add
+    module procedure op_d_add_float
+  end interface operator (+)
 
-  public :: operator (>)
-  interface operator (>)
-    module procedure greater_p
-  end interface
+  public :: operator (-)
+  interface operator (-)
+    module procedure op_sub
+    module procedure op_si_sub
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_si_sub_int
+#endif
+    module procedure op_si_sub_short
+    module procedure op_sub_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_sub_si_int
+#endif
+    module procedure op_sub_si_short
+    module procedure op_d_sub
+    module procedure op_d_sub_float
+    module procedure op_sub_d
+    module procedure op_sub_d_float
+  end interface operator (-)
 
-  public :: operator (==)
-  interface operator (==)
-    module procedure equal_p
-  end interface
+  public :: operator (**)
+  interface operator (**)
+    module procedure op_pow
+    module procedure op_pow_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_pow_si_int
+#endif
+    module procedure op_pow_si_short
+  end interface operator (**)
 
-  public :: operator (<)
-  interface operator (<)
-    module procedure less_p
+  public :: operator (/=)
+  interface operator (/=)
+    module procedure lessgreater_p
   end interface
 
   public :: operator (<=)
@@ -591,9 +666,24 @@ module fmpfr_oper
     module procedure lessequal_p
   end interface
 
-  public :: operator (/=)
-  interface operator (/=)
-    module procedure lessgreater_p
+  public :: operator (<)
+  interface operator (<)
+    module procedure less_p
+  end interface
+
+  public :: operator (>=)
+  interface operator (>=)
+    module procedure greaterequal_p
+  end interface
+
+  public :: operator (==)
+  interface operator (==)
+    module procedure equal_p
+  end interface
+
+  public :: operator (>)
+  interface operator (>)
+    module procedure greater_p
   end interface
 
   public :: assignment(=)
@@ -658,7 +748,7 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set (rop%mp, op%mp, rnd_val)
+      call fmpfr_set (rop%mp, op%mp, rnd_val)
     end function fun_set
 
     elemental function fun_set_si (op, rnd) result (rop)
@@ -674,19 +764,18 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_si (rop%mp, op, rnd_val)
+      call fmpfr_set_si (rop%mp, op, rnd_val)
     end function fun_set_si
 
     elemental subroutine ass_set_si (rop, op)
       type (fmpfr), intent(inout) :: rop
       integer (c_long), intent(in) :: op
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_si (rop%mp, op, default_rnd)
+      call fmpfr_set_si (rop%mp, op, default_rnd)
     end subroutine ass_set_si
 
 #if SIZEOF_INT < SIZEOF_LONG
@@ -694,28 +783,26 @@ contains
     type (fmpfr), intent(inout) :: rop
     integer (c_int), intent(in) :: op
     integer (c_long) :: tmp_op;
-    integer :: rc
 
     tmp_op = op;
     if (.not. rop%initialized) then
       call mpfr_init2 (rop%mp, default_prec)
       rop%initialized = .true.
     end if
-    rc = mpfr_set_si (rop%mp, tmp_op, default_rnd)
+    call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_int
 #endif
   elemental subroutine ass_set_si_short (rop, op)
     type (fmpfr), intent(inout) :: rop
     integer (c_short), intent(in) :: op
     integer (c_long) :: tmp_op;
-    integer :: rc
 
     tmp_op = op;
     if (.not. rop%initialized) then
       call mpfr_init2 (rop%mp, default_prec)
       rop%initialized = .true.
     end if
-    rc = mpfr_set_si (rop%mp, tmp_op, default_rnd)
+    call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_short
     elemental function fun_set_flt (op, rnd) result (rop)
       real (c_float), intent(in) :: op
@@ -730,19 +817,18 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_flt (rop%mp, op, rnd_val)
+      call fmpfr_set_flt (rop%mp, op, rnd_val)
     end function fun_set_flt
 
     elemental subroutine ass_set_flt (rop, op)
       type (fmpfr), intent(inout) :: rop
       real (c_float), intent(in) :: op
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_flt (rop%mp, op, default_rnd)
+      call fmpfr_set_flt (rop%mp, op, default_rnd)
     end subroutine ass_set_flt
 
     elemental function fun_set_d (op, rnd) result (rop)
@@ -758,19 +844,18 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_d (rop%mp, op, rnd_val)
+      call fmpfr_set_d (rop%mp, op, rnd_val)
     end function fun_set_d
 
     elemental subroutine ass_set_d (rop, op)
       type (fmpfr), intent(inout) :: rop
       real (c_double), intent(in) :: op
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_d (rop%mp, op, default_rnd)
+      call fmpfr_set_d (rop%mp, op, default_rnd)
     end subroutine ass_set_d
 
 #if USE_LONG_DOUBLE
@@ -787,19 +872,18 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_ld (rop%mp, op, rnd_val)
+      call fmpfr_set_ld (rop%mp, op, rnd_val)
     end function fun_set_ld
 
     elemental subroutine ass_set_ld (rop, op)
       type (fmpfr), intent(inout) :: rop
       real (c_long_double), intent(in) :: op
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_ld (rop%mp, op, default_rnd)
+      call fmpfr_set_ld (rop%mp, op, default_rnd)
     end subroutine ass_set_ld
 
 #endif
@@ -817,19 +901,18 @@ contains
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_float128 (rop%mp, op, rnd_val)
+      call fmpfr_set_float128 (rop%mp, op, rnd_val)
     end function fun_set_float128
 
     elemental subroutine ass_set_float128 (rop, op)
       type (fmpfr), intent(inout) :: rop
       real (qp), intent(in) :: op
-      integer :: rc
 
       if (.not. rop%initialized) then
         call mpfr_init2 (rop%mp, default_prec)
         rop%initialized = .true.
       end if
-      rc = mpfr_set_float128 (rop%mp, op, default_rnd)
+      call fmpfr_set_float128 (rop%mp, op, default_rnd)
     end subroutine ass_set_float128
 
 #endif
@@ -1765,7 +1848,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_greater_p (op1%mp, op2%mp)
+      call fmpfr_greater_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1778,7 +1861,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_greaterequal_p (op1%mp, op2%mp)
+      call fmpfr_greaterequal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1791,7 +1874,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_less_p (op1%mp, op2%mp)
+      call fmpfr_less_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1804,7 +1887,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_lessequal_p (op1%mp, op2%mp)
+      call fmpfr_lessequal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1817,7 +1900,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_equal_p (op1%mp, op2%mp)
+      call fmpfr_equal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1830,7 +1913,7 @@ contains
       logical :: ret
       integer :: rc
 
-      rc = mpfr_lessgreater_p (op1%mp, op2%mp)
+      call fmpfr_lessgreater_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -2133,7 +2216,7 @@ contains
     type (fmpfr) :: rop
     character(kind=c_char,len=*), intent(in) :: s
     integer (kind=kind(c_int)), intent(in), optional :: rnd
-    integer :: rc
+    integer, volatile :: rc
     integer :: rnd_val
     character(kind=c_char), dimension(:), allocatable, target :: s_arg
     rnd_val = default_rnd
@@ -2146,7 +2229,7 @@ contains
     allocate (s_arg(len(s)+1))
     s_arg(1:len(s)) = transfer(s,s_arg)
     s_arg(len(s)+1) = char(0)
-    rc = mpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
     deallocate (s_arg)
   end function fun_set_str
 
@@ -2202,7 +2285,7 @@ contains
       call mpfr_init2 (rop%mp, default_prec)
       rop%initialized = .true.
     end if
-    rc = mpfr_set (rop%mp, op%mp, default_rnd)    
+    call fmpfr_set (rop%mp, op%mp, default_rnd)    
   end subroutine ass_set
 
   elemental subroutine fmpfr_cleanup (self)

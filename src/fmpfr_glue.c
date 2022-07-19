@@ -26,6 +26,41 @@
 
 #include <mpfr.h>
 
+void fmpfr_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+{
+  mpfr_set (rop, op, rnd);
+}
+
+void fmpfr_set_si (mpfr_t rop, long int op, mpfr_rnd_t rnd)
+{
+  mpfr_set_si (rop, op, rnd);
+}
+
+void fmpfr_set_flt (mpfr_t rop, float op, mpfr_rnd_t rnd)
+{
+  mpfr_set_flt (rop, op, rnd);
+}
+
+void fmpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
+{
+  mpfr_set_d (rop, op, rnd);
+}
+
+void fmpfr_set_ld (mpfr_t rop, long double op, mpfr_rnd_t rnd)
+{
+  mpfr_set_ld (rop, op, rnd);
+}
+
+void fmpfr_set_float128 (mpfr_t rop, _Float128 op, mpfr_rnd_t rnd)
+{
+  mpfr_set_float128 (rop, op, rnd);
+}
+
+void fmpfr_set_str (mpfr_t rop, const char * s, int base, mpfr_rnd_t rnd)
+{
+  mpfr_set_str (rop, s, base, rnd);
+}
+
 void fmpfr_add (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
 {
   mpfr_add (rop, op1, op2, rnd);
@@ -114,6 +149,36 @@ void fmpfr_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
 void fmpfr_abs (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
 {
   mpfr_abs (rop, op, rnd);
+}
+
+void fmpfr_greater_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_greater_p (op1, op2);
+}
+
+void fmpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_greaterequal_p (op1, op2);
+}
+
+void fmpfr_less_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_less_p (op1, op2);
+}
+
+void fmpfr_lessequal_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_lessequal_p (op1, op2);
+}
+
+void fmpfr_equal_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_equal_p (op1, op2);
+}
+
+void fmpfr_lessgreater_p (mpfr_t op1, mpfr_t op2)
+{
+  mpfr_lessgreater_p (op1, op2);
 }
 
 void fmpfr_log (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
