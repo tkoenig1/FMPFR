@@ -1005,7 +1005,7 @@ sub handle_compare
       logical :: ret
       integer :: rc
 
-      call f$name (op1%mp, op2%mp)
+      rc = $name (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else

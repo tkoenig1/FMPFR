@@ -1848,7 +1848,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_greater_p (op1%mp, op2%mp)
+      rc = mpfr_greater_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1861,7 +1861,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_greaterequal_p (op1%mp, op2%mp)
+      rc = mpfr_greaterequal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1874,7 +1874,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_less_p (op1%mp, op2%mp)
+      rc = mpfr_less_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1887,7 +1887,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_lessequal_p (op1%mp, op2%mp)
+      rc = mpfr_lessequal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1900,7 +1900,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_equal_p (op1%mp, op2%mp)
+      rc = mpfr_equal_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
@@ -1913,7 +1913,7 @@ contains
       logical :: ret
       integer :: rc
 
-      call fmpfr_lessgreater_p (op1%mp, op2%mp)
+      rc = mpfr_lessgreater_p (op1%mp, op2%mp)
       if (rc /= 0) then
         ret = .true.
       else
