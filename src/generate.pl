@@ -303,14 +303,14 @@ close CBIND;
 
 print OPER $fglue,"  end interface\n";
 
-for $f (keys(%funint)) {
+for $f (sort keys(%funint)) {
     print OPER "  public :: $f\n";
     print OPER "  interface $f\n";
     print OPER @{$funint{$f}};
     print OPER "  end interface $f\n\n";
 }
 
-for $f (keys(%opint)) {
+for $f (sort keys(%opint)) {
     $x = $opinter{$f};
     print OPER "  public :: operator (",$x,")\n";
     print OPER "  interface operator (",$x,")\n";
@@ -318,7 +318,7 @@ for $f (keys(%opint)) {
     print OPER "  end interface operator (",$x,")\n\n";
 }
 
-for $k (keys(%compare_int)) {
+for $k (sort keys(%compare_int)) {
     print OPER <<"EOF";
   public :: operator ($k)
   interface operator ($k)
@@ -959,8 +959,10 @@ EOF
 sub write_glue
 {
     my ($intent) = @_;
-    $intent = "intent(out)" unless defined($intent);
     my (@a, $fg, $fname, $at);
+    $intent = "intent(out)" unless defined($intent);
+    print CGLUE "#if USE_FLOAT128\n" if $is_float128;
+    print CGLUE  "#if USE_LONG_DOUBLE\n" if $is_long_double;
     $fname = "f" . $name;
     print CGLUE "void $fname (";
     for my $i (0..$#argtypes) {
@@ -969,6 +971,8 @@ sub write_glue
     print CGLUE join(", ",@a),")\n{\n";
     print CGLUE "  $name (", join(", ",@vars),");\n";
     print CGLUE "}\n\n";
+    print CGLUE "#endif\n" if $is_float128 || $is_long_double;
+
     $fg = "";
     $fg .= "#if USE_FLOAT128\n" if $is_float128;
     $fg .= "#if USE_LONG_DOUBLE\n" if $is_long_double;

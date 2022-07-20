@@ -46,16 +46,20 @@ void fmpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
   mpfr_set_d (rop, op, rnd);
 }
 
+#if USE_LONG_DOUBLE
 void fmpfr_set_ld (mpfr_t rop, long double op, mpfr_rnd_t rnd)
 {
   mpfr_set_ld (rop, op, rnd);
 }
 
+#endif
+#if USE_FLOAT128
 void fmpfr_set_float128 (mpfr_t rop, _Float128 op, mpfr_rnd_t rnd)
 {
   mpfr_set_float128 (rop, op, rnd);
 }
 
+#endif
 void fmpfr_set_str (mpfr_t rop, const char * s, int base, mpfr_rnd_t rnd)
 {
   mpfr_set_str (rop, s, base, rnd);

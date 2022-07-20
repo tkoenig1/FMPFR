@@ -392,24 +392,15 @@ module fmpfr_oper
     end subroutine fmpfr_max
 
   end interface
-  public :: sub
-  interface sub
-    module procedure fun_sub
-    module procedure fun_si_sub
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_si_sub_int
-#endif
-    module procedure fun_si_sub_short
-    module procedure fun_sub_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_sub_si_int
-#endif
-    module procedure fun_sub_si_short
-    module procedure fun_d_sub
-    module procedure fun_d_sub_float
-    module procedure fun_sub_d
-    module procedure fun_sub_d_float
-  end interface sub
+  public :: abs
+  interface abs
+    module procedure fun_abs
+  end interface abs
+
+  public :: acos
+  interface acos
+    module procedure fun_acos
+  end interface acos
 
   public :: add
   interface add
@@ -428,35 +419,10 @@ module fmpfr_oper
     module procedure fun_asin
   end interface asin
 
-  public :: init
-  interface init
-    module procedure init_long
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure init_int
-#endif
-    module procedure init_short
-    module procedure init_default
-  end interface init
-
   public :: atan
   interface atan
     module procedure fun_atan
   end interface atan
-
-  public :: abs
-  interface abs
-    module procedure fun_abs
-  end interface abs
-
-  public :: pow
-  interface pow
-    module procedure fun_pow
-    module procedure fun_pow_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_pow_si_int
-#endif
-    module procedure fun_pow_si_short
-  end interface pow
 
   public :: atan2
   interface atan2
@@ -467,43 +433,6 @@ module fmpfr_oper
   interface cos
     module procedure fun_cos
   end interface cos
-
-  public :: sin
-  interface sin
-    module procedure fun_sin
-  end interface sin
-
-  public :: exp
-  interface exp
-    module procedure fun_exp
-  end interface exp
-
-  public :: mul
-  interface mul
-    module procedure fun_mul
-    module procedure fun_mul_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure fun_mul_si_int
-#endif
-    module procedure fun_mul_si_short
-    module procedure fun_mul_d
-    module procedure fun_mul_d_float
-  end interface mul
-
-  public :: sqrt
-  interface sqrt
-    module procedure fun_sqrt
-  end interface sqrt
-
-  public :: gamma
-  interface gamma
-    module procedure fun_gamma
-  end interface gamma
-
-  public :: log
-  interface log
-    module procedure fun_log
-  end interface log
 
   public :: div
   interface div
@@ -524,15 +453,10 @@ module fmpfr_oper
     module procedure fun_div_d_float
   end interface div
 
-  public :: max
-  interface max
-    module procedure fun_max
-  end interface max
-
-  public :: min
-  interface min
-    module procedure fun_min
-  end interface min
+  public :: exp
+  interface exp
+    module procedure fun_exp
+  end interface exp
 
   public :: fmpfr
   interface fmpfr
@@ -548,15 +472,62 @@ module fmpfr_oper
   module procedure fun_set_str
   end interface fmpfr
 
-  public :: tan
-  interface tan
-    module procedure fun_tan
-  end interface tan
+  public :: gamma
+  interface gamma
+    module procedure fun_gamma
+  end interface gamma
 
-  public :: acos
-  interface acos
-    module procedure fun_acos
-  end interface acos
+  public :: init
+  interface init
+    module procedure init_long
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure init_int
+#endif
+    module procedure init_short
+    module procedure init_default
+  end interface init
+
+  public :: log
+  interface log
+    module procedure fun_log
+  end interface log
+
+  public :: log10
+  interface log10
+    module procedure fun_log10
+  end interface log10
+
+  public :: max
+  interface max
+    module procedure fun_max
+  end interface max
+
+  public :: min
+  interface min
+    module procedure fun_min
+  end interface min
+
+  public :: mul
+  interface mul
+    module procedure fun_mul
+    module procedure fun_mul_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure fun_mul_si_int
+#endif
+    module procedure fun_mul_si_short
+    module procedure fun_mul_d
+    module procedure fun_mul_d_float
+  end interface mul
+
+  public :: pow
+  interface pow
+    module procedure fun_pow
+    module procedure fun_pow_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure fun_pow_si_int
+#endif
+    module procedure fun_pow_si_short
+  end interface pow
 
   public :: set_default_prec
   interface set_default_prec
@@ -565,48 +536,39 @@ module fmpfr_oper
     module procedure set_default_prec_short
   end interface set_default_prec
 
-  public :: log10
-  interface log10
-    module procedure fun_log10
-  end interface log10
+  public :: sin
+  interface sin
+    module procedure fun_sin
+  end interface sin
 
-  public :: operator (*)
-  interface operator (*)
-    module procedure op_mul
-    module procedure op_mul_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_mul_si_int
-#endif
-    module procedure op_mul_si_short
-    module procedure op_si_mul
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_si_mul_int
-#endif
-    module procedure op_si_mul_short
-    module procedure op_mul_d
-    module procedure op_mul_d_float
-    module procedure op_d_mul
-    module procedure op_d_mul_float
-  end interface operator (*)
+  public :: sqrt
+  interface sqrt
+    module procedure fun_sqrt
+  end interface sqrt
 
-  public :: operator (/)
-  interface operator (/)
-    module procedure op_div
-    module procedure op_si_div
+  public :: sub
+  interface sub
+    module procedure fun_sub
+    module procedure fun_si_sub
 #if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_si_div_int
+    module procedure fun_si_sub_int
 #endif
-    module procedure op_si_div_short
-    module procedure op_div_si
+    module procedure fun_si_sub_short
+    module procedure fun_sub_si
 #if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_div_si_int
+    module procedure fun_sub_si_int
 #endif
-    module procedure op_div_si_short
-    module procedure op_d_div
-    module procedure op_d_div_float
-    module procedure op_div_d
-    module procedure op_div_d_float
-  end interface operator (/)
+    module procedure fun_sub_si_short
+    module procedure fun_d_sub
+    module procedure fun_d_sub_float
+    module procedure fun_sub_d
+    module procedure fun_sub_d_float
+  end interface sub
+
+  public :: tan
+  interface tan
+    module procedure fun_tan
+  end interface tan
 
   public :: operator (+)
   interface operator (+)
@@ -627,6 +589,54 @@ module fmpfr_oper
     module procedure op_d_add_float
   end interface operator (+)
 
+  public :: operator (/)
+  interface operator (/)
+    module procedure op_div
+    module procedure op_si_div
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_si_div_int
+#endif
+    module procedure op_si_div_short
+    module procedure op_div_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_div_si_int
+#endif
+    module procedure op_div_si_short
+    module procedure op_d_div
+    module procedure op_d_div_float
+    module procedure op_div_d
+    module procedure op_div_d_float
+  end interface operator (/)
+
+  public :: operator (*)
+  interface operator (*)
+    module procedure op_mul
+    module procedure op_mul_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_mul_si_int
+#endif
+    module procedure op_mul_si_short
+    module procedure op_si_mul
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_si_mul_int
+#endif
+    module procedure op_si_mul_short
+    module procedure op_mul_d
+    module procedure op_mul_d_float
+    module procedure op_d_mul
+    module procedure op_d_mul_float
+  end interface operator (*)
+
+  public :: operator (**)
+  interface operator (**)
+    module procedure op_pow
+    module procedure op_pow_si
+#if SIZEOF_INT < SIZEOF_LONG
+    module procedure op_pow_si_int
+#endif
+    module procedure op_pow_si_short
+  end interface operator (**)
+
   public :: operator (-)
   interface operator (-)
     module procedure op_sub
@@ -646,24 +656,9 @@ module fmpfr_oper
     module procedure op_sub_d_float
   end interface operator (-)
 
-  public :: operator (**)
-  interface operator (**)
-    module procedure op_pow
-    module procedure op_pow_si
-#if SIZEOF_INT < SIZEOF_LONG
-    module procedure op_pow_si_int
-#endif
-    module procedure op_pow_si_short
-  end interface operator (**)
-
   public :: operator (/=)
   interface operator (/=)
     module procedure lessgreater_p
-  end interface
-
-  public :: operator (<=)
-  interface operator (<=)
-    module procedure lessequal_p
   end interface
 
   public :: operator (<)
@@ -671,9 +666,9 @@ module fmpfr_oper
     module procedure less_p
   end interface
 
-  public :: operator (>=)
-  interface operator (>=)
-    module procedure greaterequal_p
+  public :: operator (<=)
+  interface operator (<=)
+    module procedure lessequal_p
   end interface
 
   public :: operator (==)
@@ -684,6 +679,11 @@ module fmpfr_oper
   public :: operator (>)
   interface operator (>)
     module procedure greater_p
+  end interface
+
+  public :: operator (>=)
+  interface operator (>=)
+    module procedure greaterequal_p
   end interface
 
   public :: assignment(=)
