@@ -50,7 +50,9 @@ whose output is
 
 ## Status
 
-This is an initial work, expect bugs and (especially) missing features.
+This is an initial work, expect bugs and (especially) missing features
+and possibly some instability, at least in binary compatibility
+(I aim for source code).
 
 ## Modifying the code
 
