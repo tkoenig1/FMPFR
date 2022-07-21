@@ -5489,6 +5489,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 $as_echo "$fortran_have_ieee128" >&6; }
 if test "$fortran_have_ieee128""$mpfr_have_float128" == yesyes; then
 fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_FLOAT128=1"
+CFLAGS="$CFLAGS -DUSE_FLOAT128=1"
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if c_long_double is useful" >&5
 $as_echo_n "checking if c_long_double is useful... " >&6; }
@@ -5520,6 +5521,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 $as_echo "$fortran_use_c_long_double" >&6; }
 if test x"$fortran_use_c_long_double" == xyes; then
 fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_LONG_DOUBLE=1"
+CFLAGS="$CFLAGS -DUSE_LONG_DOUBLE=1"
 fi
 
 

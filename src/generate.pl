@@ -211,7 +211,12 @@ for $x (qw(mpfr_rndn mpfr_rndz mpfr_rndu mpfr_rndd mpfr_rnda
       
 open CGLUE, ">fmpfr_glue.c" or die "Kann fmpfr_glue.c nicht oeffnen: $!";
 print CGLUE "/*\n", $copyright,"*/\n\n";
-print CGLUE "#include <mpfr.h>\n\n";
+print CGLUE <<"EOF";
+#if USE_FLOAT128
+#define MPFR_WANT_FLOAT128
+#endif
+#include <mpfr.h>
+EOF
 
 $fglue = "\n  interface\n";
 

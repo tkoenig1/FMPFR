@@ -183,6 +183,7 @@ AC_COMPILE_IFELSE([
 AC_MSG_RESULT([$fortran_have_ieee128])
 if test "$fortran_have_ieee128""$mpfr_have_float128" == yesyes; then
 fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_FLOAT128=1"
+CFLAGS="$CFLAGS -DUSE_FLOAT128=1"
 fi
 AC_MSG_CHECKING([if c_long_double is useful])
 AC_COMPILE_IFELSE([
@@ -204,6 +205,7 @@ AC_COMPILE_IFELSE([
 AC_MSG_RESULT([$fortran_use_c_long_double])
 if test x"$fortran_use_c_long_double" == xyes; then
 fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_LONG_DOUBLE=1"
+CFLAGS="$CFLAGS -DUSE_LONG_DOUBLE=1"
 fi
 
 AC_SUBST(use_float128)

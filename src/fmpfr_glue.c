@@ -24,8 +24,10 @@
   SOFTWARE.
 */
 
+#if USE_FLOAT128
+#define MPFR_WANT_FLOAT128
+#endif
 #include <mpfr.h>
-
 void fmpfr_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
 {
   mpfr_set (rop, op, rnd);
