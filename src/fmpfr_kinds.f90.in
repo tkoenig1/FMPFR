@@ -5,7 +5,7 @@ module fmpfr_kinds
   integer, parameter, public :: mpfr_exp_kind = @mpfr_exp_t@
     type, bind(C) :: mpfr_t
      private
-     integer (kind=mpfr_prec_kind) :: mpfr_prec
+     integer (kind=mpfr_prec_kind), public :: mpfr_prec
      integer (kind=c_int) :: mpfr_sign
      integer (kind=mpfr_exp_kind) :: mpfr_exp
      type (c_ptr) :: mpfr_d

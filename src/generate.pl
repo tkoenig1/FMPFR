@@ -93,8 +93,11 @@ foreach $k (keys(%atype)) {
     $v = $atype{$k};
     $v =~ s/,.*//;
     $ftype{$k} = $v;
+    $ctype{$k} = $v;
 }
+
 $ftype {"mpfr_t"} = "type (fmpfr)";
+$ftype {"mpfr_rnd_t"} = "integer (kind=int8)";
 
 @pure = qw(mpfr_get_prec mpfr_init2 mpfr_set_d mpfr_set_flt mpfr_set_si
     mpfr_set mpfr_set_str mpfr_get_si mpfr_get_d mpfr_get_flt mpfr_clear
@@ -156,7 +159,7 @@ module fmpfr_kinds
   integer, parameter, public :: mpfr_exp_kind = \@mpfr_exp_t\@
     type, bind(C) :: mpfr_t
      private
-     integer (kind=mpfr_prec_kind) :: mpfr_prec
+     integer (kind=mpfr_prec_kind), public :: mpfr_prec
      integer (kind=c_int) :: mpfr_sign
      integer (kind=mpfr_exp_kind) :: mpfr_exp
      type (c_ptr) :: mpfr_d
@@ -272,7 +275,7 @@ LINE: while (<>) {
 	}
 	print CBIND "      ",$atype{$argtypes[$i]},"$intent :: ", $vars[$i],"\n";
     }
-    print CBIND "      ",$ftype{$type}, " :: ret\n" unless $subroutine;
+    print CBIND "      ",$ctype{$type}, " :: ret\n" unless $subroutine;
     print CBIND "    end ", $xname, "\n";
     print CBIND "#endif\n\n" if $is_float128 || $is_long_double;
 
@@ -357,7 +360,7 @@ sub handle_stuff
     my (@mpfr_ops, @prec_ops, $i_stuff, $i_rnd);
 
     &write_glue;
-    $olines .= "    elemental function fun_$stem (" . join (", ",@vars[1..$#vars]) .
+    $olines .= "  elemental function fun_$stem (" . join (", ",@vars[1..$#vars]) .
 	") result (" . $vars[0] . ")\n";
     for $i (1..$#vars) {
 	$olines .=  "      " . $ftype{$argtypes[$i]} . ", intent(in)";
@@ -644,10 +647,11 @@ sub handle_rop_assign
     }
     @prec_ops = map { "prec_" . $_ } @vars[@mpfr_ops];
     $nlines .= "      " . $ftype{$argtypes[0]} . " :: ". $vars[0] . "\n";
-    $nlines .= "      integer (mpfr_prec_kind) :: ";
-    $nlines .= join (", ", @prec_ops);
-    $nlines .= ", prec" if $#prec_ops > 0;
-    $nlines .= "\n      $ftype{$type} :: rc\n";
+    if ($#prec_ops > 0) {
+	$nlines .= "      integer (mpfr_prec_kind) :: ";
+	$nlines .= join (", ", @prec_ops) . "\n";
+    }
+    $nlines .= "\n";
 
     $nlines .= <<"EOF";
       integer (c_int) :: rnd_val
@@ -822,18 +826,18 @@ sub misc_routines
     $olines .= <<"EOF";
   function fun_set_str (s, rnd) result(rop)
     type (fmpfr) :: rop
+    integer (kind=int8), optional :: rnd
     character(kind=c_char,len=*), intent(in) :: s
-    integer (kind=kind(c_int)), intent(in), optional :: rnd
-    integer, volatile :: rc
-    integer :: rnd_val
     character(kind=c_char), dimension(:), allocatable, target :: s_arg
+    integer (kind=c_int) :: rnd_val
+
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
     if (.not. rop%initialized) then
        call mpfr_init2 (rop%mp, default_prec)
        rop%initialized = .true.
      end if
-    
+
     allocate (s_arg(len(s)+1))
     s_arg(1:len(s)) = transfer(s,s_arg)
     s_arg(len(s)+1) = char(0)
@@ -887,10 +891,9 @@ sub misc_routines
   elemental subroutine ass_set (rop, op)
     type (fmpfr), intent(inout) :: rop
     type (fmpfr), intent(in) :: op
-    integer (c_int) :: rc
 
     if (.not. rop%initialized) then
-      call mpfr_init2 (rop%mp, default_prec)
+      call mpfr_init2 (rop%mp, max(default_prec, op%mp%mpfr_prec))
       rop%initialized = .true.
     end if
     call fmpfr_set (rop%mp, op%mp, default_rnd)    
@@ -956,12 +959,38 @@ sub call_init
     default_prec = prec
   end subroutine set_default_prec_$type
 
+  function fun_set_str_$type (s, prec, rnd) result(rop)
+    type (fmpfr) :: rop
+    character(kind=c_char,len=*), intent(in) :: s
+    integer (c_$type), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    integer (mpfr_prec_kind) :: prec_val
+    integer(c_int) :: rnd_val
+    character(kind=c_char), dimension(:), allocatable, target :: s_arg
+
+    prec_val = prec
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    if (.not. rop%initialized) then
+       call mpfr_init2 (rop%mp, prec_val)
+       rop%initialized = .true.
+     end if
+    
+    allocate (s_arg(len(s)+1))
+    s_arg(1:len(s)) = transfer(s,s_arg)
+    s_arg(len(s)+1) = char(0)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    deallocate (s_arg)
+  end function fun_set_str_$type
+
 EOF
 
     push(@{$funint{"init"}}, "    module procedure init_$type\n");
     push(@{$funint{"set_default_prec"}},
 	 "    module procedure set_default_prec_$type\n");
+    push(@{$funint{"fmpfr"}}, "    module procedure fun_set_str_$type\n");
 }
+
 sub write_glue
 {
     my ($intent) = @_;
@@ -1000,8 +1029,6 @@ sub handle_compare
 {
     my($comparison) = @_;
     my ($nlines, $xname, $operator);
-
-    &write_glue ("intent(in)");
 
     $xname = $comparison . "_p";
     $operator = $compare{$comparison};

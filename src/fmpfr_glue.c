@@ -157,36 +157,6 @@ void fmpfr_abs (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
   mpfr_abs (rop, op, rnd);
 }
 
-void fmpfr_greater_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_greater_p (op1, op2);
-}
-
-void fmpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_greaterequal_p (op1, op2);
-}
-
-void fmpfr_less_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_less_p (op1, op2);
-}
-
-void fmpfr_lessequal_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_lessequal_p (op1, op2);
-}
-
-void fmpfr_equal_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_equal_p (op1, op2);
-}
-
-void fmpfr_lessgreater_p (mpfr_t op1, mpfr_t op2)
-{
-  mpfr_lessgreater_p (op1, op2);
-}
-
 void fmpfr_log (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
 {
   mpfr_log (rop, op, rnd);

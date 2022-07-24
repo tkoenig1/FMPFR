@@ -246,42 +246,6 @@ module fmpfr_oper
       integer (c_int), value:: rnd
     end subroutine fmpfr_abs
 
-    pure subroutine fmpfr_greater_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_greater_p
-
-    pure subroutine fmpfr_greaterequal_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_greaterequal_p
-
-    pure subroutine fmpfr_less_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_less_p
-
-    pure subroutine fmpfr_lessequal_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_lessequal_p
-
-    pure subroutine fmpfr_equal_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_equal_p
-
-    pure subroutine fmpfr_lessgreater_p (op1, op2) bind(c)
-      import
-      type (mpfr_t), intent(in) :: op1
-      type (mpfr_t), intent(in) :: op2
-    end subroutine fmpfr_lessgreater_p
-
     pure subroutine fmpfr_log (rop, op, rnd) bind(c)
       import
       type (mpfr_t), intent(out) :: rop
@@ -471,6 +435,9 @@ module fmpfr_oper
     module procedure fun_set_float128
 #endif
   module procedure fun_set_str
+    module procedure fun_set_str_long
+    module procedure fun_set_str_int
+    module procedure fun_set_str_short
   end interface fmpfr
 
   public :: gamma
@@ -738,10 +705,9 @@ end interface assignment(=)
 contains
     elemental function fun_set (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -754,10 +720,9 @@ contains
 
     elemental function fun_set_si (op, rnd) result (rop)
       integer (c_long), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -807,10 +772,9 @@ contains
   end subroutine ass_set_si_short
     elemental function fun_set_flt (op, rnd) result (rop)
       real (c_float), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -834,10 +798,9 @@ contains
 
     elemental function fun_set_d (op, rnd) result (rop)
       real (c_double), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -862,10 +825,9 @@ contains
 #if USE_LONG_DOUBLE
     elemental function fun_set_ld (op, rnd) result (rop)
       real (c_long_double), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -891,10 +853,9 @@ contains
 #if USE_FLOAT128
     elemental function fun_set_float128 (op, rnd) result (rop)
       real (qp), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       type (fmpfr) :: rop
-      integer (mpfr_prec_kind) :: prec_op
-      integer (c_int) :: rc
+
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
@@ -919,7 +880,7 @@ contains
 #endif
     elemental function get_flt (op, rnd) result (rval)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       real (c_float) :: rval
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
@@ -936,7 +897,7 @@ contains
 
     elemental function get_d (op, rnd) result (rval)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       real (c_double) :: rval
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
@@ -954,7 +915,7 @@ contains
 #if USE_LONG_DOUBLE
     elemental function get_ld (op, rnd) result (rval)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       real (c_long_double) :: rval
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
@@ -973,7 +934,7 @@ contains
 #if USE_FLOAT128
     elemental function get_float128 (op, rnd) result (rval)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       real (qp) :: rval
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
@@ -991,7 +952,7 @@ contains
 #endif
     elemental function get_si (op, rnd) result (rval)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional :: rnd
+      integer (kind=int8), intent(in), optional :: rnd
       integer (c_long) :: rval
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
@@ -1006,10 +967,10 @@ contains
     rval = get_si (op)
   end subroutine ass_get_si
 
-    elemental function fun_add (op1, op2, rnd) result (rop)
+  elemental function fun_add (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -1032,10 +993,10 @@ contains
       rop = fun_add (op1, op2)
     end function op_add
 
-    elemental function fun_add_si (op1, op2, rnd) result (rop)
+  elemental function fun_add_si (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_long), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1060,7 +1021,7 @@ contains
   elemental function fun_add_si_int (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_int), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1079,7 +1040,7 @@ contains
   elemental function fun_add_si_short (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_short), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1122,10 +1083,10 @@ contains
       rop =  fun_add_si (op1, op2_tmp)
     end function op_si_add_short
 
-    elemental function fun_add_d (op1, op2, rnd) result (rop)
+  elemental function fun_add_d (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_double), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1149,7 +1110,7 @@ contains
   elemental function fun_add_d_float (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_float), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op2_tmp
       op2_tmp = op2
@@ -1180,10 +1141,10 @@ contains
       rop =  fun_add_d (op1, op2_tmp)
     end function op_d_add_float
 
-    elemental function fun_sub (op1, op2, rnd) result (rop)
+  elemental function fun_sub (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -1206,10 +1167,10 @@ contains
       rop = fun_sub (op1, op2)
     end function op_sub
 
-    elemental function fun_si_sub (op1, op2, rnd) result (rop)
+  elemental function fun_si_sub (op1, op2, rnd) result (rop)
       integer (c_long), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op2
       integer (c_int) :: rnd_val
@@ -1234,7 +1195,7 @@ contains
   elemental function fun_si_sub_int (op1, op2, rnd) result (rop)
       integer (c_int), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op1_tmp
       op1_tmp = op1
@@ -1253,7 +1214,7 @@ contains
   elemental function fun_si_sub_short (op1, op2, rnd) result (rop)
       integer (c_short), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op1_tmp
       op1_tmp = op1
@@ -1267,10 +1228,10 @@ contains
       rop = fun_si_sub_short (op1, op2)
   end function op_si_sub_short
 
-    elemental function fun_sub_si (op1, op2, rnd) result (rop)
+  elemental function fun_sub_si (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_long), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1295,7 +1256,7 @@ contains
   elemental function fun_sub_si_int (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_int), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1314,7 +1275,7 @@ contains
   elemental function fun_sub_si_short (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_short), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1328,10 +1289,10 @@ contains
       rop = fun_sub_si_short (op1, op2)
   end function op_sub_si_short
 
-    elemental function fun_d_sub (op1, op2, rnd) result (rop)
+  elemental function fun_d_sub (op1, op2, rnd) result (rop)
       real (c_double), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op2
       integer (c_int) :: rnd_val
@@ -1355,7 +1316,7 @@ contains
   elemental function fun_d_sub_float (op1, op2, rnd) result (rop)
       real (c_float), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op1_tmp
       op1_tmp = op1
@@ -1369,10 +1330,10 @@ contains
       rop = fun_d_sub_float (op1, op2)
   end function op_d_sub_float
 
-    elemental function fun_sub_d (op1, op2, rnd) result (rop)
+  elemental function fun_sub_d (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_double), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1396,7 +1357,7 @@ contains
   elemental function fun_sub_d_float (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_float), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op2_tmp
       op2_tmp = op2
@@ -1410,10 +1371,10 @@ contains
       rop = fun_sub_d_float (op1, op2)
   end function op_sub_d_float
 
-    elemental function fun_mul (op1, op2, rnd) result (rop)
+  elemental function fun_mul (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -1436,10 +1397,10 @@ contains
       rop = fun_mul (op1, op2)
     end function op_mul
 
-    elemental function fun_mul_si (op1, op2, rnd) result (rop)
+  elemental function fun_mul_si (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_long), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1464,7 +1425,7 @@ contains
   elemental function fun_mul_si_int (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_int), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1483,7 +1444,7 @@ contains
   elemental function fun_mul_si_short (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_short), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1526,10 +1487,10 @@ contains
       rop =  fun_mul_si (op1, op2_tmp)
     end function op_si_mul_short
 
-    elemental function fun_mul_d (op1, op2, rnd) result (rop)
+  elemental function fun_mul_d (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_double), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1553,7 +1514,7 @@ contains
   elemental function fun_mul_d_float (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_float), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op2_tmp
       op2_tmp = op2
@@ -1584,10 +1545,10 @@ contains
       rop =  fun_mul_d (op1, op2_tmp)
     end function op_d_mul_float
 
-    elemental function fun_div (op1, op2, rnd) result (rop)
+  elemental function fun_div (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -1610,10 +1571,10 @@ contains
       rop = fun_div (op1, op2)
     end function op_div
 
-    elemental function fun_si_div (op1, op2, rnd) result (rop)
+  elemental function fun_si_div (op1, op2, rnd) result (rop)
       integer (c_long), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op2
       integer (c_int) :: rnd_val
@@ -1638,7 +1599,7 @@ contains
   elemental function fun_si_div_int (op1, op2, rnd) result (rop)
       integer (c_int), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op1_tmp
       op1_tmp = op1
@@ -1657,7 +1618,7 @@ contains
   elemental function fun_si_div_short (op1, op2, rnd) result (rop)
       integer (c_short), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op1_tmp
       op1_tmp = op1
@@ -1671,10 +1632,10 @@ contains
       rop = fun_si_div_short (op1, op2)
   end function op_si_div_short
 
-    elemental function fun_div_si (op1, op2, rnd) result (rop)
+  elemental function fun_div_si (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_long), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1699,7 +1660,7 @@ contains
   elemental function fun_div_si_int (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_int), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1718,7 +1679,7 @@ contains
   elemental function fun_div_si_short (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_short), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -1732,10 +1693,10 @@ contains
       rop = fun_div_si_short (op1, op2)
   end function op_div_si_short
 
-    elemental function fun_d_div (op1, op2, rnd) result (rop)
+  elemental function fun_d_div (op1, op2, rnd) result (rop)
       real (c_double), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op2
       integer (c_int) :: rnd_val
@@ -1759,7 +1720,7 @@ contains
   elemental function fun_d_div_float (op1, op2, rnd) result (rop)
       real (c_float), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op1_tmp
       op1_tmp = op1
@@ -1773,10 +1734,10 @@ contains
       rop = fun_d_div_float (op1, op2)
   end function op_d_div_float
 
-    elemental function fun_div_d (op1, op2, rnd) result (rop)
+  elemental function fun_div_d (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_double), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -1800,7 +1761,7 @@ contains
   elemental function fun_div_d_float (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       real (c_float), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       real (c_double) :: op2_tmp
       op2_tmp = op2
@@ -1816,7 +1777,7 @@ contains
 
   elemental function fun_sqrt (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -1831,7 +1792,7 @@ contains
 
   elemental function fun_abs (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -1924,7 +1885,7 @@ contains
 
   elemental function fun_log (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -1939,7 +1900,7 @@ contains
 
   elemental function fun_log10 (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -1954,7 +1915,7 @@ contains
 
   elemental function fun_exp (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -1967,10 +1928,10 @@ contains
       call fmpfr_exp (rop%mp, op%mp, rnd_val)
   end function fun_exp
 
-    elemental function fun_pow (op1, op2, rnd) result (rop)
+  elemental function fun_pow (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -1993,10 +1954,10 @@ contains
       rop = fun_pow (op1, op2)
     end function op_pow
 
-    elemental function fun_pow_si (op1, op2, rnd) result (rop)
+  elemental function fun_pow_si (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_long), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1
       integer (c_int) :: rnd_val
@@ -2021,7 +1982,7 @@ contains
   elemental function fun_pow_si_int (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_int), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -2040,7 +2001,7 @@ contains
   elemental function fun_pow_si_short (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       integer (c_short), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (c_long) :: op2_tmp
       op2_tmp = op2
@@ -2056,7 +2017,7 @@ contains
 
   elemental function fun_cos (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2071,7 +2032,7 @@ contains
 
   elemental function fun_sin (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2086,7 +2047,7 @@ contains
 
   elemental function fun_tan (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2101,7 +2062,7 @@ contains
 
   elemental function fun_acos (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2116,7 +2077,7 @@ contains
 
   elemental function fun_asin (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2131,7 +2092,7 @@ contains
 
   elemental function fun_atan (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2147,7 +2108,7 @@ contains
   elemental function fun_atan2 (y, x, rnd) result (rop)
       type (fmpfr), intent(in) :: y
       type (fmpfr), intent(in) :: x
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_y, prec_x, prec
       integer (c_int) :: rnd_val
@@ -2164,7 +2125,7 @@ contains
 
   elemental function fun_gamma (op, rnd) result (rop)
       type (fmpfr), intent(in) :: op
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op
       integer (c_int) :: rnd_val
@@ -2180,7 +2141,7 @@ contains
   elemental function fun_min (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -2198,7 +2159,7 @@ contains
   elemental function fun_max (op1, op2, rnd) result (rop)
       type (fmpfr), intent(in) :: op1
       type (fmpfr), intent(in) :: op2
-      integer (c_int), intent(in), optional  :: rnd
+      integer (kind=int8), intent(in), optional  :: rnd
       type (fmpfr) :: rop
       integer (mpfr_prec_kind) :: prec_op1, prec_op2, prec
       integer (c_int) :: rnd_val
@@ -2215,18 +2176,18 @@ contains
 
   function fun_set_str (s, rnd) result(rop)
     type (fmpfr) :: rop
+    integer (kind=int8), optional :: rnd
     character(kind=c_char,len=*), intent(in) :: s
-    integer (kind=kind(c_int)), intent(in), optional :: rnd
-    integer, volatile :: rc
-    integer :: rnd_val
     character(kind=c_char), dimension(:), allocatable, target :: s_arg
+    integer (kind=c_int) :: rnd_val
+
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
     if (.not. rop%initialized) then
        call mpfr_init2 (rop%mp, default_prec)
        rop%initialized = .true.
      end if
-    
+
     allocate (s_arg(len(s)+1))
     s_arg(1:len(s)) = transfer(s,s_arg)
     s_arg(len(s)+1) = char(0)
@@ -2280,10 +2241,9 @@ contains
   elemental subroutine ass_set (rop, op)
     type (fmpfr), intent(inout) :: rop
     type (fmpfr), intent(in) :: op
-    integer (c_int) :: rc
 
     if (.not. rop%initialized) then
-      call mpfr_init2 (rop%mp, default_prec)
+      call mpfr_init2 (rop%mp, max(default_prec, op%mp%mpfr_prec))
       rop%initialized = .true.
     end if
     call fmpfr_set (rop%mp, op%mp, default_rnd)    
@@ -2327,6 +2287,30 @@ contains
     default_prec = prec
   end subroutine set_default_prec_long
 
+  function fun_set_str_long (s, prec, rnd) result(rop)
+    type (fmpfr) :: rop
+    character(kind=c_char,len=*), intent(in) :: s
+    integer (c_long), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    integer (mpfr_prec_kind) :: prec_val
+    integer(c_int) :: rnd_val
+    character(kind=c_char), dimension(:), allocatable, target :: s_arg
+
+    prec_val = prec
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    if (.not. rop%initialized) then
+       call mpfr_init2 (rop%mp, prec_val)
+       rop%initialized = .true.
+     end if
+    
+    allocate (s_arg(len(s)+1))
+    s_arg(1:len(s)) = transfer(s,s_arg)
+    s_arg(len(s)+1) = char(0)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    deallocate (s_arg)
+  end function fun_set_str_long
+
 #if SIZEOF_INT < SIZEOF_LONG
   elemental subroutine init_int (op, prec)
     type (fmpfr), intent(inout) :: op
@@ -2345,6 +2329,30 @@ contains
     default_prec = prec
   end subroutine set_default_prec_int
 
+  function fun_set_str_int (s, prec, rnd) result(rop)
+    type (fmpfr) :: rop
+    character(kind=c_char,len=*), intent(in) :: s
+    integer (c_int), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    integer (mpfr_prec_kind) :: prec_val
+    integer(c_int) :: rnd_val
+    character(kind=c_char), dimension(:), allocatable, target :: s_arg
+
+    prec_val = prec
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    if (.not. rop%initialized) then
+       call mpfr_init2 (rop%mp, prec_val)
+       rop%initialized = .true.
+     end if
+    
+    allocate (s_arg(len(s)+1))
+    s_arg(1:len(s)) = transfer(s,s_arg)
+    s_arg(len(s)+1) = char(0)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    deallocate (s_arg)
+  end function fun_set_str_int
+
 #endif
   elemental subroutine init_short (op, prec)
     type (fmpfr), intent(inout) :: op
@@ -2362,5 +2370,29 @@ contains
     integer (c_short), intent(in) :: prec
     default_prec = prec
   end subroutine set_default_prec_short
+
+  function fun_set_str_short (s, prec, rnd) result(rop)
+    type (fmpfr) :: rop
+    character(kind=c_char,len=*), intent(in) :: s
+    integer (c_short), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    integer (mpfr_prec_kind) :: prec_val
+    integer(c_int) :: rnd_val
+    character(kind=c_char), dimension(:), allocatable, target :: s_arg
+
+    prec_val = prec
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    if (.not. rop%initialized) then
+       call mpfr_init2 (rop%mp, prec_val)
+       rop%initialized = .true.
+     end if
+    
+    allocate (s_arg(len(s)+1))
+    s_arg(1:len(s)) = transfer(s,s_arg)
+    s_arg(len(s)+1) = char(0)
+    call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
+    deallocate (s_arg)
+  end function fun_set_str_short
 
 end module fmpfr_oper

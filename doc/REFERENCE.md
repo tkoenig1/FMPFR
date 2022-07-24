@@ -81,7 +81,7 @@ first assigned to, it gets the default precision as specified by
 `set_default_prec`.  To mimic Fortran semantics, the precision of the
 variable does *not* depend on the precision of the right-hand side.
 If a different precision is required, it is possible to initialize a
-variable using `call init(prec)` where prec is the number of binary
+variable `a` using `call init(a, prec)` where prec is the number of binary
 digits to be used.
 
 ## Assignment
@@ -100,9 +100,9 @@ a value of the same accuracy as its first arguments.
 ### Conversion to fmpfr
 
 The `fmpfr` function can be used to convert a character variable to
-an fmpfr value.  It takes an optional argument to specify the rounding.
-  
-```
+an fmpfr value.  It takes two optional arguments: `prec`, which
+specifies the number of arguments, and `rnd`, which specifies the
+rounding mode.
 
 ### Arithmetic functions with rounding control
 
