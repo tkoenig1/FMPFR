@@ -179,6 +179,7 @@ print OPER $f_copyright;
 print OPER <<"EOF";
 module fmpfr_oper
   use fmpfr_c
+  use iso_fortran_env
   implicit none
   private
   type fmpfr
@@ -188,10 +189,10 @@ module fmpfr_oper
     final :: fmpfr_cleanup
   end type fmpfr
 
-  enum, bind(c)
-     enumerator :: mpfr_rndn = 0, mpfr_rndz, mpfr_rndu, mpfr_rndd, mpfr_rnda, &
-          mpfr_rndf, mpfr_rndna = -1
-  end enum
+  integer (kind=int8), parameter :: mpfr_rndn = 0, mpfr_rndz = 1, &
+    mpfr_rndu = 2, mpfr_rndd = 3, mpfr_rnda = 4, mpfr_rndf = 5, &
+    mpfr_rndna = -1
+
   integer (c_int) :: default_rnd
 
   interface
