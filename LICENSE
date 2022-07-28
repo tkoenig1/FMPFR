@@ -22,9 +22,9 @@ Anything in the src subdirectory is covered by the MIT license:
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 
-The files compile, depcomp, and missing in the main directory are
-part of automake-1.16 and are covered by the GNU General public
-license, version 2:
+The files compile, depcomp, missing and test-driver in the main
+directory are part of automake-1.16 and are covered by the GNU
+General public license, version 2:
 
 GNU GENERAL PUBLIC LICENSE
 

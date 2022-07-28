@@ -426,6 +426,10 @@ module fmpfr_oper
   public :: fmpfr
   interface fmpfr
     module procedure fun_set_si
+#if SIZEOF_INT < SIZEOF_LONG
+  module procedure fun_set_si_int
+#endif
+  module procedure fun_set_si_short
     module procedure fun_set_flt
     module procedure fun_set_d
 #if USE_LONG_DOUBLE
@@ -658,7 +662,9 @@ module fmpfr_oper
   interface assignment(=)
     module procedure ass_set
     module procedure ass_set_si
+#if SIZEOF_INT < SIZEOF_LONG
     module procedure ass_set_si_int
+#endif
     module procedure ass_set_si_short
     module procedure ass_set_flt
     module procedure ass_set_d
@@ -757,6 +763,22 @@ contains
     end if
     call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_int
+  elemental function fun_set_si_int (op, rnd) result (rop)
+    integer (c_int), intent(in) :: op
+    integer (kind=int8), optional, intent(in) :: rnd
+    type (fmpfr) :: rop
+    integer (c_long) :: tmp_op
+    integer (c_int) :: rnd_val
+
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    tmp_op = op;
+    if (.not. rop%initialized) then
+      call mpfr_init2 (rop%mp, default_prec)
+      rop%initialized = .true.
+    end if
+    call fmpfr_set_si (rop%mp, tmp_op, rnd_val)
+  end function fun_set_si_int
 #endif
   elemental subroutine ass_set_si_short (rop, op)
     type (fmpfr), intent(inout) :: rop
@@ -770,6 +792,22 @@ contains
     end if
     call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_short
+  elemental function fun_set_si_short (op, rnd) result (rop)
+    integer (c_short), intent(in) :: op
+    integer (kind=int8), optional, intent(in) :: rnd
+    type (fmpfr) :: rop
+    integer (c_long) :: tmp_op
+    integer (c_int) :: rnd_val
+
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    tmp_op = op;
+    if (.not. rop%initialized) then
+      call mpfr_init2 (rop%mp, default_prec)
+      rop%initialized = .true.
+    end if
+    call fmpfr_set_si (rop%mp, tmp_op, rnd_val)
+  end function fun_set_si_short
     elemental function fun_set_flt (op, rnd) result (rop)
       real (c_float), intent(in) :: op
       integer (kind=int8), intent(in), optional :: rnd

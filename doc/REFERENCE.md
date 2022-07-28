@@ -26,6 +26,13 @@ and `integer(c_short)`, `integer(c_int)`, `integer(c_long)`,
 If you use these operators, they use the default rounding as set by
 `set_rounding_mode`, which defaults to`MPFR_RNDN`.
 
+Comparision operators are supported, but both sides have to be of
+`type (fmpr)`.  This mirrors the usage of MPFR.  The best way to
+compare to a constant would be
+```
+  if (a < fmpfr("1.2"))
+```
+
 ### Rounding modes
 
 Default rounding can be set via a call to `set_default_rounding_mode`.

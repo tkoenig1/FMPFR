@@ -5,6 +5,7 @@ AC_CONFIG_FILES([
 Makefile
 src/fmpfr_kinds.f90
 src/Makefile
+test/Makefile
 ])
 
 AM_INIT_AUTOMAKE([foreign])
@@ -174,6 +175,18 @@ AC_COMPILE_IFELSE([
       end if
       end program main
 ],[AC_MSG_RESULT([yes])],[AC_MSG_ERROR([Derived-type I/O unsupported])])
+AC_MSG_CHECKING([if the Fortran compiler supports -I])
+save_FCFLAGS=$FCFLAGS
+AC_COMPILE_IFELSE([
+      error stop
+      end
+],[AC_MSG_RESULT([yes])],[AC_MSG_ERROR([-I not supported.])])
+FCFLAGS=$save_FCFLAGS
+AC_MSG_CHECKING([if Fortran supports ERROR STOP])
+AC_COMPILE_IFELSE([
+      error stop
+      end
+],[AC_MSG_RESULT([yes])],AC_MSG_ERROR([ERROR STOP required for testsuite for now]))
 AC_MSG_CHECKING([if Fortran supports IEEE 128-bit])
 AC_COMPILE_IFELSE([
       integer, parameter :: qp = selected_real_kind(33,4000)

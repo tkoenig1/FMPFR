@@ -2327,7 +2327,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-ac_config_files="$ac_config_files Makefile src/fmpfr_kinds.f90 src/Makefile"
+ac_config_files="$ac_config_files Makefile src/fmpfr_kinds.f90 src/Makefile test/Makefile"
 
 
 am__api_version='1.16'
@@ -5470,6 +5470,38 @@ else
   as_fn_error $? "Derived-type I/O unsupported" "$LINENO" 5
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if the Fortran compiler supports -I" >&5
+$as_echo_n "checking if the Fortran compiler supports -I... " >&6; }
+save_FCFLAGS=$FCFLAGS
+cat > conftest.$ac_ext <<_ACEOF
+
+      error stop
+      end
+
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  as_fn_error $? "-I not supported." "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+FCFLAGS=$save_FCFLAGS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if Fortran supports ERROR STOP" >&5
+$as_echo_n "checking if Fortran supports ERROR STOP... " >&6; }
+cat > conftest.$ac_ext <<_ACEOF
+
+      error stop
+      end
+
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  as_fn_error $? "ERROR STOP required for testsuite for now" "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if Fortran supports IEEE 128-bit" >&5
 $as_echo_n "checking if Fortran supports IEEE 128-bit... " >&6; }
 cat > conftest.$ac_ext <<_ACEOF
@@ -6291,6 +6323,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/fmpfr_kinds.f90") CONFIG_FILES="$CONFIG_FILES src/fmpfr_kinds.f90" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
+    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

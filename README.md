@@ -48,11 +48,14 @@ whose output is
  9.635581854171929647013486300395548153418E-1  -1.577456941432483820116542776024823708430E-1
 ```
 
+## Installation
+Type `./configure` and `make`.  If everything was successful, type `make check`.
+
 ## Status
 
 This is an initial work, expect bugs and (especially) missing features
-and possibly some instability, at least in binary compatibility
-(I aim for source code).
+and possibly some instability, at least in binary compatibility.
+Source code compatibility should be fine.
 
 ## Modifying the code
 

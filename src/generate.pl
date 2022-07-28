@@ -717,7 +717,11 @@ EOF
     }
     if (defined($part2) && $part2 eq "si") {
 	$olines .= "#if SIZEOF_INT < SIZEOF_LONG\n";
+	push (@assint, "#if SIZEOF_INT < SIZEOF_LONG\n");
+	push (@{$funint{"fmpfr"}},"#if SIZEOF_INT < SIZEOF_LONG\n");
 	&conv_type_ass ("long int", "int", $stem);
+	push (@assint, "#endif\n");
+	push (@{$funint{"fmpfr"}},"#endif\n");
 	$olines .= "#endif\n";
 	&conv_type_ass ("long int", "short", $stem);
     }
@@ -729,7 +733,7 @@ EOF
 sub conv_type_ass
 {
     my($from, $to, $stem) = @_;
-    my ($nlines, $xname);
+    my ($nlines, $xname, $yname);
 
     $xname = "ass_$stem" . "_$to";
     $nlines = "  elemental subroutine $xname (rop, op)\n";
@@ -746,9 +750,30 @@ sub conv_type_ass
     call f$name (rop%mp, tmp_op, default_rnd)
   end subroutine $xname
 EOF
-	
+
+    $yname = "fun_$stem" . "_$to";
+    $nlines .= <<"EOF";
+  elemental function $yname (op, rnd) result (rop)
+    $ftype{$to}, intent(in) :: op
+    integer (kind=int8), optional, intent(in) :: rnd
+    type (fmpfr) :: rop
+    $ftype{$from} :: tmp_op
+    integer (c_int) :: rnd_val
+
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+    tmp_op = op;
+    if (.not. rop%initialized) then
+      call mpfr_init2 (rop%mp, default_prec)
+      rop%initialized = .true.
+    end if
+    call f$name (rop%mp, tmp_op, rnd_val)
+  end function $yname
+EOF
+
     $olines .= $nlines;
     push (@assint, "    module procedure $xname\n");
+    push (@{$funint{"fmpfr"}}, "  module procedure $yname\n");
 }
 
 sub handle_t_assign
