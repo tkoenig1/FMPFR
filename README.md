@@ -4,6 +4,10 @@ This library offers a Fortran binding to the [GNU MPFR
 Library](https://www.mpfr.org/) multi-precision library.  The aim of
 the library is to make the use of MPFR convenient for a Fortran user.
 
+## Compiler requirements
+As of now, you need a compiler which supports `ERROR STOP` and
+derived type I/O, so it should be relatively recent.
+
 ## What is supported
 
 * Arithmetic expressions can be used the usual way; expressions
