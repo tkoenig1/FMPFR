@@ -438,7 +438,7 @@ contains
   subroutine error_check(a,b)
     type (fmpfr), intent(in) :: a, b
     if (a /= b) then
-      print *,a, b
+      print *,get_str(a), get_str(b)
       error stop
     end if
   end subroutine error_check
