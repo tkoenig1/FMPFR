@@ -341,11 +341,12 @@ print OPER "  interface assignment(=)\n", @assint,
     "end interface assignment(=)\n\n";
 
 print OPER <<"EOF";
+#if USE_DERIVED_IO
   public :: write(formatted)
   interface write(formatted)
     module procedure write_formatted
   end interface write(formatted)
-
+#endif
 EOF
 
 print OPER @public;
@@ -870,6 +871,70 @@ sub misc_routines
     deallocate (s_arg)
   end function fun_set_str
 
+  function get_str_work (op, n, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (kind=c_size_t), intent(in), optional :: n
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    character, pointer :: p(:)
+    type (c_ptr) :: pc
+    integer (c_size_t) :: n_val
+    integer (c_int) :: rnd_val
+    integer (mpfr_exp_kind) :: exp_val
+    integer, parameter :: exp_dig = digits(exp_val)
+    character (len=exp_dig+1) :: exp_buffer
+    integer (c_size_t) :: slen, exp_len, total_len, i, start
+
+    if (mpfr_nan_p (op%mp) /= 0) then
+      res = "NaN"
+      return
+   else if (mpfr_inf_p(op%mp) /= 0) then
+     if (mpfr_signbit(op%mp) == 0) then
+       res = "+Inf"
+     else
+       res = "-Inf"
+     end if
+     return
+    end if
+    n_val = 0
+    if (present(n)) n_val = n
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+
+    pc = mpfr_get_str (c_null_ptr, exp_val, 10, n_val, op%mp, rnd_val)
+    slen = strlen(pc)
+    call c_f_pointer (pc, p, shape=[slen])
+    write (exp_buffer,'(SP,I0)') exp_val-1
+    exp_len = len_trim(exp_buffer)
+    total_len = slen +  exp_len + 2
+    allocate (character(len=total_len) :: res)
+
+    if (p(1) == "+" .or. p(1) == "-") then
+      res(1:1) = p(1)
+      res(2:2) = p(2)
+      res(3:3) = "."
+      start = 4
+    else
+      res(1:1) = p(1)
+      res(2:2) = "."
+      start = 3
+    end if
+
+    do i=start, slen+1
+      res(i:i) = p(i-1)
+    end do
+    res(i:i) = 'E'
+    res(i+1:) = exp_buffer(:exp_len)
+  end function get_str_work
+
+  function get_str_rnd (op, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    res = get_str_work (op, 0_c_size_t, rnd)
+  end function get_str_rnd
+
+#if USE_DERIVED_IO
   subroutine write_formatted (dtv, unit, iotype, vlist, iostat, iomsg)
     class (fmpfr), intent(in) :: dtv
     integer, intent(in) :: unit
@@ -913,6 +978,8 @@ sub misc_routines
     call mpfr_free_str(pc)
   end subroutine write_formatted
 
+#endif
+
   elemental subroutine ass_set (rop, op)
     type (fmpfr), intent(inout) :: rop
     type (fmpfr), intent(in) :: op
@@ -949,7 +1016,8 @@ EOF
 
     push (@public, "  public :: fmpfr_cleanup\n");
     push (@public, "  public :: set_default_rounding_mode\n");
-    push(@{$funint{"fmpfr"}}, "  module procedure fun_set_str\n");
+    push (@{$funint{"get_str"}}, "    module procedure get_str_rnd\n");
+    push (@{$funint{"fmpfr"}}, "    module procedure fun_set_str\n");
 
     &call_init ("long");
     $olines .= "#if SIZEOF_INT < SIZEOF_LONG\n";
@@ -1008,12 +1076,25 @@ sub call_init
     deallocate (s_arg)
   end function fun_set_str_$type
 
+  function get_str_$type (op, prec, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    $ftype{$type}, intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    integer (kind=c_size_t) :: prec_val
+
+    prec_val = prec
+    res = get_str_work (op, prec_val, rnd)
+  end function get_str_$type
+
+
 EOF
 
     push(@{$funint{"init"}}, "    module procedure init_$type\n");
     push(@{$funint{"set_default_prec"}},
 	 "    module procedure set_default_prec_$type\n");
     push(@{$funint{"fmpfr"}}, "    module procedure fun_set_str_$type\n");
+    push(@{$funint{"get_str"}},"    module procedure get_str_$type\n");
 }
 
 sub write_glue

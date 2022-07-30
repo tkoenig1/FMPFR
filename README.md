@@ -5,8 +5,8 @@ Library](https://www.mpfr.org/) multi-precision library.  The aim of
 the library is to make the use of MPFR convenient for a Fortran user.
 
 ## Compiler requirements
-As of now, you need a compiler which supports `ERROR STOP` and
-derived type I/O, so it should be relatively recent.
+As of now, you need a compiler which supports `ERROR STOP for the
+testsuite.
 
 ## What is supported
 
@@ -32,7 +32,7 @@ can be mixed with real and integer expressions.
 
 ## An example
 
-Here is a short exampe:
+Here is a short exampe, if your compiler supports user-defined I/O:
 ```
 program memain
   use fmpfr_oper
@@ -44,12 +44,14 @@ program memain
   a(2) = a(1) + 2
   print *,a
   print *,sin(a)
+  print *,get_str(cos(a(1)),10)
 end program memain
 ```
 whose output is
 ```
  1.299999999999999999999999999999999999998E0  3.299999999999999999999999999999999999998E0 
- 9.635581854171929647013486300395548153418E-1  -1.577456941432483820116542776024823708430E-1
+ 9.635581854171929647013486300395548153418E-1  -1.577456941432483820116542776024823708430E-1 
+ 2.674988286E-1
 ```
 
 ## Installation

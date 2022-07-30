@@ -423,7 +423,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_float128 = @use_float128@
-TESTS = basic_arithmetic$(EXEEXT)
+TESTS = basic_arithmetic$(EXEEXT) list_directed_io$(EXEEXT) get_str$(EXEEXT)
+FC_PREPROCESSOR_FLAG = @fc_preprocessor_flag@ @fc_preflags@
 all: all-am
 
 .SUFFIXES:
@@ -612,6 +613,20 @@ basic_arithmetic.log: basic_arithmetic$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+list_directed_io.log: list_directed_io$(EXEEXT)
+	@p='list_directed_io$(EXEEXT)'; \
+	b='list_directed_io'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+get_str.log: get_str$(EXEEXT)
+	@p='get_str$(EXEEXT)'; \
+	b='get_str'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -698,12 +713,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
-
 clean-am: clean-generic mostlyclean-am
 
-distclean: distclean-am
-	-rm -f Makefile
 distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
@@ -780,9 +791,16 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-%: %.f90
-	pwd
-	$(FC) -I ../src -o $@ $< ../src/libfmpfr.a -lmpfr
+%: %.f90 ../src/libfmpfr.a
+	$(FC) -g -I ../src -o $@ $< ../src/libfmpfr.a -lmpfr
+
+%: %.F90 ../src/libfmpfr.a
+	$(FC) $(FC_PREPROCESSOR_FLAG) -g -I ../src -o $@ $< ../src/libfmpfr.a -lmpfr
+
+distclean: clean
+
+clean:
+	rm -f $(TESTS) *.mod *.log *.trs *~
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

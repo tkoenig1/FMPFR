@@ -5464,12 +5464,17 @@ cat > conftest.$ac_ext <<_ACEOF
 
 _ACEOF
 if ac_fn_fc_try_compile "$LINENO"; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
+  derived_io=yes
 else
-  as_fn_error $? "Derived-type I/O unsupported" "$LINENO" 5
+  derived_io=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $derived_io" >&5
+$as_echo "$derived_io" >&6; }
+if test "$derived_io" == "yes"; then
+  fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_DERIVED_IO=1"
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the Fortran compiler supports -I" >&5
 $as_echo_n "checking if the Fortran compiler supports -I... " >&6; }
 save_FCFLAGS=$FCFLAGS

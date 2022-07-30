@@ -13,6 +13,17 @@ all functions pertaining to unsigned integer types have been removed.
 Finally, `fmpfr_oper` provides all the functions that a user would
 normally need.
 
+## I/O
+
+On compilers which support user-derived I/O, list-directed output
+is supported.  Output can also be done using the function `get_str`,
+which takes two optional arguments: The number of decimal digits,
+`n`, and the rounding mode, `rnd`.  Note that `get_str` is not
+elemental, so it has to operate on individual array elements.
+
+Input has to be done by reading strings, and then using the `fmpfr`
+function on them.
+
 ## Arithmetic
 
 ### Supported operators

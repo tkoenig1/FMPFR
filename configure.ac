@@ -174,7 +174,13 @@ AC_COMPILE_IFELSE([
          close (10,status="keep")
       end if
       end program main
-],[AC_MSG_RESULT([yes])],[AC_MSG_ERROR([Derived-type I/O unsupported])])
+],
+[derived_io=yes],[derived_io=no])
+AC_MSG_RESULT([$derived_io])
+if test "$derived_io" == "yes"; then
+  fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_DERIVED_IO=1"
+fi
+
 AC_MSG_CHECKING([if the Fortran compiler supports -I])
 save_FCFLAGS=$FCFLAGS
 AC_COMPILE_IFELSE([

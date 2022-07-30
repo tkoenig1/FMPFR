@@ -438,7 +438,7 @@ module fmpfr_oper
 #if USE_FLOAT128
     module procedure fun_set_float128
 #endif
-  module procedure fun_set_str
+    module procedure fun_set_str
     module procedure fun_set_str_long
     module procedure fun_set_str_int
     module procedure fun_set_str_short
@@ -448,6 +448,14 @@ module fmpfr_oper
   interface gamma
     module procedure fun_gamma
   end interface gamma
+
+  public :: get_str
+  interface get_str
+    module procedure get_str_rnd
+    module procedure get_str_long
+    module procedure get_str_int
+    module procedure get_str_short
+  end interface get_str
 
   public :: init
   interface init
@@ -685,11 +693,12 @@ module fmpfr_oper
     module procedure ass_get_si
 end interface assignment(=)
 
+#if USE_DERIVED_IO
   public :: write(formatted)
   interface write(formatted)
     module procedure write_formatted
   end interface write(formatted)
-
+#endif
   public :: mpfr_rndn
   public :: mpfr_rndz
   public :: mpfr_rndu
@@ -2233,6 +2242,70 @@ contains
     deallocate (s_arg)
   end function fun_set_str
 
+  function get_str_work (op, n, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (kind=c_size_t), intent(in), optional :: n
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    character, pointer :: p(:)
+    type (c_ptr) :: pc
+    integer (c_size_t) :: n_val
+    integer (c_int) :: rnd_val
+    integer (mpfr_exp_kind) :: exp_val
+    integer, parameter :: exp_dig = digits(exp_val)
+    character (len=exp_dig+1) :: exp_buffer
+    integer (c_size_t) :: slen, exp_len, total_len, i, start
+
+    if (mpfr_nan_p (op%mp) /= 0) then
+      res = "NaN"
+      return
+   else if (mpfr_inf_p(op%mp) /= 0) then
+     if (mpfr_signbit(op%mp) == 0) then
+       res = "+Inf"
+     else
+       res = "-Inf"
+     end if
+     return
+    end if
+    n_val = 0
+    if (present(n)) n_val = n
+    rnd_val = default_rnd
+    if (present(rnd)) rnd_val = rnd
+
+    pc = mpfr_get_str (c_null_ptr, exp_val, 10, n_val, op%mp, rnd_val)
+    slen = strlen(pc)
+    call c_f_pointer (pc, p, shape=[slen])
+    write (exp_buffer,'(SP,I0)') exp_val-1
+    exp_len = len_trim(exp_buffer)
+    total_len = slen +  exp_len + 2
+    allocate (character(len=total_len) :: res)
+
+    if (p(1) == "+" .or. p(1) == "-") then
+      res(1:1) = p(1)
+      res(2:2) = p(2)
+      res(3:3) = "."
+      start = 4
+    else
+      res(1:1) = p(1)
+      res(2:2) = "."
+      start = 3
+    end if
+
+    do i=start, slen+1
+      res(i:i) = p(i-1)
+    end do
+    res(i:i) = 'E'
+    res(i+1:) = exp_buffer(:exp_len)
+  end function get_str_work
+
+  function get_str_rnd (op, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    res = get_str_work (op, 0_c_size_t, rnd)
+  end function get_str_rnd
+
+#if USE_DERIVED_IO
   subroutine write_formatted (dtv, unit, iotype, vlist, iostat, iomsg)
     class (fmpfr), intent(in) :: dtv
     integer, intent(in) :: unit
@@ -2275,6 +2348,8 @@ contains
     write (unit,fmt='(I0,1X)',iostat=iostat,iomsg=iomsg) exp_val-1
     call mpfr_free_str(pc)
   end subroutine write_formatted
+
+#endif
 
   elemental subroutine ass_set (rop, op)
     type (fmpfr), intent(inout) :: rop
@@ -2349,6 +2424,18 @@ contains
     deallocate (s_arg)
   end function fun_set_str_long
 
+  function get_str_long (op, prec, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (c_long), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    integer (kind=c_size_t) :: prec_val
+
+    prec_val = prec
+    res = get_str_work (op, prec_val, rnd)
+  end function get_str_long
+
+
 #if SIZEOF_INT < SIZEOF_LONG
   elemental subroutine init_int (op, prec)
     type (fmpfr), intent(inout) :: op
@@ -2391,6 +2478,18 @@ contains
     deallocate (s_arg)
   end function fun_set_str_int
 
+  function get_str_int (op, prec, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (c_int), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    integer (kind=c_size_t) :: prec_val
+
+    prec_val = prec
+    res = get_str_work (op, prec_val, rnd)
+  end function get_str_int
+
+
 #endif
   elemental subroutine init_short (op, prec)
     type (fmpfr), intent(inout) :: op
@@ -2432,5 +2531,17 @@ contains
     call fmpfr_set_str (rop%mp, c_loc(s_arg), 10, rnd_val)
     deallocate (s_arg)
   end function fun_set_str_short
+
+  function get_str_short (op, prec, rnd) result(res)
+    type (fmpfr), intent(in) :: op
+    integer (c_short), intent(in) :: prec
+    integer (kind=int8), intent(in), optional :: rnd
+    character (len=:), allocatable :: res
+    integer (kind=c_size_t) :: prec_val
+
+    prec_val = prec
+    res = get_str_work (op, prec_val, rnd)
+  end function get_str_short
+
 
 end module fmpfr_oper
