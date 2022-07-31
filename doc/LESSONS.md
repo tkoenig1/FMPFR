@@ -66,7 +66,7 @@ both `c_int` and `c_long`, these might be the same, and an interface like
    subroutine foo_int (a)
      integer(c_int) :: a
 ...
-   subroutnie foo_long
+   subroutine foo_long
      integer(c_long) :: a
 ```
 
