@@ -1,4 +1,5 @@
 program memain
+#if USE_DERIVED_IO
   use fmpfr_oper
   type (fmpfr) :: c, d
   character (len=80) :: line
@@ -9,7 +10,5 @@ program memain
   read (10,'(A)') line
   d = fmpfr(line)
   if (c /= d) stop 1
-  print *,c
-  line = get_str(c,10)
-  print *,trim(line)
+#endif
 end program
