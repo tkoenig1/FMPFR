@@ -1,4 +1,4 @@
-AC_INIT([Fortran MPFR biding], 0.0,,[libfmpfr])
+AC_INIT([Fortran MPFR biding], 0.1,,[libfmpfr])
 
 AC_CONFIG_SRCDIR(src/fmpfr_kinds.f90.in)
 AC_CONFIG_FILES([
