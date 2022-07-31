@@ -180,7 +180,21 @@ AC_MSG_RESULT([$derived_io])
 if test "$derived_io" == "yes"; then
   fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_DERIVED_IO=1"
 fi
-
+AC_MSG_CHECKING([if the Fortran compiler supports finalization])
+AC_COMPILE_IFELSE([
+      module x
+        type foo
+          integer :: a
+        contains
+          final :: cleanup
+        end type foo
+      contains
+        subroutine cleanup(self)
+          type(foo), intent(inout) :: self
+          self%a = 0
+      end subroutine cleanup
+      end module x
+],[AC_MSG_RESULT([yes])],[AC_MSG_ERROR([Finalization not supported])])
 AC_MSG_CHECKING([if the Fortran compiler supports -I])
 save_FCFLAGS=$FCFLAGS
 AC_COMPILE_IFELSE([

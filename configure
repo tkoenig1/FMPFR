@@ -5474,7 +5474,31 @@ $as_echo "$derived_io" >&6; }
 if test "$derived_io" == "yes"; then
   fc_preflags="$fc_preflags $ac_cv_fc_pp_define""USE_DERIVED_IO=1"
 fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if the Fortran compiler supports finalization" >&5
+$as_echo_n "checking if the Fortran compiler supports finalization... " >&6; }
+cat > conftest.$ac_ext <<_ACEOF
 
+      module x
+        type foo
+          integer :: a
+        contains
+          final :: cleanup
+        end type foo
+      contains
+        subroutine cleanup(self)
+          type(foo), intent(inout) :: self
+          self%a = 0
+      end subroutine cleanup
+      end module x
+
+_ACEOF
+if ac_fn_fc_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  as_fn_error $? "Finalization not supported" "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the Fortran compiler supports -I" >&5
 $as_echo_n "checking if the Fortran compiler supports -I... " >&6; }
 save_FCFLAGS=$FCFLAGS
