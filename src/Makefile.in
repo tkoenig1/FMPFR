@@ -558,7 +558,7 @@ distclean: distclean-am
 		-rm -f ./$(DEPDIR)/fmpfr_glue.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+	distclean-local distclean-tags
 
 dvi: dvi-am
 
@@ -624,10 +624,10 @@ uninstall-am: uninstall-libLIBRARIES
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles check check-am clean \
 	clean-generic clean-libLIBRARIES clean-local cscopelist-am \
 	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
+	distclean-local distclean-tags distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
 	install-libLIBRARIES install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
@@ -649,6 +649,9 @@ fmpfr_oper.mod fmpfr_oper.o: fmpfr_oper.F90 fmpfr_c.mod fmpfr_kinds.mod
 
 clean-local:
 	rm -f *.mod *~ *.o *~ libmpfr.a
+
+distclean-local:
+	rm -f fmpfr_kinds.f90
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

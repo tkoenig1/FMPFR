@@ -13,3 +13,6 @@ fmpfr_oper.mod fmpfr_oper.o: fmpfr_oper.F90 fmpfr_c.mod fmpfr_kinds.mod
 
 clean-local:
 	rm -f *.mod *~ *.o *~ libmpfr.a
+
+distclean-local:
+	rm -f fmpfr_kinds.f90
