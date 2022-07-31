@@ -18,8 +18,9 @@ normally need.
 On compilers which support user-derived I/O, list-directed output
 is supported.  Output can also be done using the function `get_str`,
 which takes two optional arguments: The number of decimal digits,
-`n`, and the rounding mode, `rnd`.  Note that `get_str` is not
-elemental, so it has to operate on individual array elements.
+`n`, and the rounding mode, `rnd`.  Note that `get_str` is allocatable,
+to return the minimum number of characters, so it cannot be
+elemental by Fortran rules.
 
 Input has to be done by reading strings, and then using the `fmpfr`
 function on them.
@@ -38,8 +39,8 @@ If you use these operators, they use the default rounding as set by
 `set_rounding_mode`, which defaults to`MPFR_RNDN`.
 
 Comparision operators are supported, but both sides have to be of
-`type (fmpr)`.  This mirrors the usage of MPFR.  The best way to
-compare to a constant would be
+`type (fmpr)`.  This mirrors the capabilities of MPFR, and may be extened
+in a future version.  The best way to compare to a constant would be
 ```
   if (a < fmpfr("1.2"))
 ```
@@ -104,6 +105,12 @@ digits to be used.
 
 ## Assignment
 
+Assignment to and from interoperable integer and real types are
+supported. This generally includes the standard Fortran types.
+Note that assigning a `REAL` which is not exactly representable
+as a binary floating point number, such as `1.3`, will not regain
+any precision lost in the original Fortran number.
+
 ## Functions
 
 ### Supported intrinsic functions
@@ -113,7 +120,7 @@ The following of Fortran's intrinsic functions are supported: `abs`,
 `log10`, `max`, `min`, `sin`, `sqrt`, `tan`.
 
 All these functions take an optional second argument for rounding, and return
-a value of the same accuracy as its first arguments.
+a value of the same accuracy as its first argument.
 
 ### Conversion to fmpfr
 
