@@ -22,15 +22,13 @@ those functions which are required and translating them for hand
 would have been time-consuming and error-prone.  Fortunately, the
 interface to MPFR is very regular, and its interfaces from the Texinfo
 source to the documentation, for example
-
 ```
 @deftypefun void mpfr_init2 (mpfr_t @var{x}, mpfr_prec_t @var{prec})
 ```
-
 are easy to find with `grep` and easy to parse with a script
 language.  Also, functions which are not suitable to use with Fortran
 (for example those containing unsigned integers) can easily be
-removed.  I use perl in this project, but other script languages
+removed.  In this project, perl is used, but other script languages
 would be equally suitable as long as they have associative arrays.
 
 ### Generating Fortran code for similar functions
@@ -48,7 +46,7 @@ n-1 places when n would have been needed.
 
 ### Lack of generics
 
-A use would probably like to write `a+3` instead of `a + `3_c_long`,
+A use would probably like to write `a+3` instead of `a + 3_c_long`,
 especially since ISO C binding is not otherwise needed on the user side.
 This was solved by generating appropriate functions from the script.
 
@@ -73,18 +71,18 @@ both `c_int` and `c_long`, these might be the same, and an interface like
 would be rejected. There is no way known to the author do solve this
 issue within the bounds of the Fortran standard.
 
-So, there needed to be a preprocessing step.  This was done using
+So, there is a need for a preprocessing step.  This was done using
 the de-facto-standard of using the C preprocessor, but the
 preprocessore needed to get its information from somewhere.
 
 For this, autoconf and the rest of the GNU autotools suggested
 itself - checking for sizes of C types is implemented there.
 
-It is now also used for checking features (not all compilers support
-user-defined I/O) and for getting information on the internal types
-of MPFR.
+Autoconf is now also used for checking features (not all compilers
+support user-defined I/O) and for getting information on the internal
+types of MPFR.  Also, the testsuite uses autotools.
 
-For me, autotools are not easy to use because of documentation which
+For the author, autotools are not easy to use because of documentation which
 is aimed at describing the features, and less towards how to reach
 specific goals.
 
@@ -147,3 +145,21 @@ was replaced with
 where `fmpfr_add_si` is a glue function containing only the
 single call to `mpfr_add_si` with the same arguments, which
 is translated into a single jump.
+
+### `ELEMENTAL` and `RECURSIVE`
+
+In Fortran 2008, a procedure could not both be elemental and
+recursive.  This restriction was lifted in Fortran 2018, but that
+is not implemented by many compilers up to now.
+
+### Array intrinsics
+
+It would have been nice to be able to use array intrinsics like
+`MAXLOC` or `CSHIFT`.  Unfortunately, it is not possible to write
+these intrinsics in Fortran unless a version is written for each
+rank.
+
+The extended C interoperability of Fortran 2018 could be used to
+write such an implementation (as libgfortran shows), but this would
+be a much larger job than the current implementation, and the code
+from libgfortran cannot be used due to the difference in license.
