@@ -11,5 +11,5 @@ fmpfr_c.mod fmpfr_c.o: fmpfr_c.F90 fmpfr_kinds.mod
 fmpfr_oper.mod fmpfr_oper.o: fmpfr_oper.F90 fmpfr_c.mod fmpfr_kinds.mod
 	$(FC) $(FC_PREPROCESSOR_FLAG) $(FCFLAGS) -c fmpfr_oper.F90
 
-clean:
+clean-local:
 	rm -f *.mod *~ *.o *~ libmpfr.a

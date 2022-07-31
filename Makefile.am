@@ -1,7 +1,7 @@
 SUBDIRS = src test
 
-distclean: clean
-	rm -f Makefile config.status 
+distclean-local: clean
+	rm -f Makefile
 
-clean:
+clean-local:
 	rm -f config.log *~ automate.cache config.status

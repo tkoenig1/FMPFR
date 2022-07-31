@@ -713,8 +713,12 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean-am: clean-generic mostlyclean-am
+clean: clean-am
 
+clean-am: clean-generic clean-local mostlyclean-am
+
+distclean: distclean-am
+	-rm -f Makefile
 distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
@@ -778,15 +782,16 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: all all-am check check-TESTS check-am clean clean-generic \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am recheck tags-am uninstall uninstall-am
+	clean-local cscopelist-am ctags-am distclean distclean-generic \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am recheck tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
@@ -797,9 +802,7 @@ uninstall-am:
 %: %.F90 ../src/libfmpfr.a
 	$(FC) $(FC_PREPROCESSOR_FLAG) -g -I ../src -o $@ $< ../src/libfmpfr.a -lmpfr
 
-distclean: clean
-
-clean:
+clean-local:
 	rm -f $(TESTS) *.mod *.log *.trs *~
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

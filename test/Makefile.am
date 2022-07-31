@@ -8,7 +8,5 @@ FC_PREPROCESSOR_FLAG = @fc_preprocessor_flag@ @fc_preflags@
 %: %.F90 ../src/libfmpfr.a
 	$(FC) $(FC_PREPROCESSOR_FLAG) -g -I ../src -o $@ $< ../src/libfmpfr.a -lmpfr
 
-distclean: clean
-
-clean:
+clean-local:
 	rm -f $(TESTS) *.mod *.log *.trs *~
