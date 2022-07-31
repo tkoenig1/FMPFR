@@ -2296,6 +2296,7 @@ contains
     end do
     res(i:i) = 'E'
     res(i+1:) = exp_buffer(:exp_len)
+    call mpfr_free_str (pc)
   end function get_str_work
 
   function get_str_rnd (op, rnd) result(res)
