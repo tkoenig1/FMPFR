@@ -4,6 +4,15 @@ This library offers a Fortran binding to the [GNU MPFR
 Library](https://www.mpfr.org/) multi-precision library.  The aim of
 the library is to make the use of MPFR convenient for a Fortran user.
 
+## Status
+
+This is an initial work, expect bugs and (especially) missing features
+and possibly some instability, at least in binary compatibility.
+Source code compatibility should be fine.
+
+There are currently known issues with memory leaks due to issues with
+finalization.
+
 ## Compiler requirements
 As of now, you need a compiler which supports `ERROR STOP for the
 testsuite.
@@ -57,11 +66,6 @@ whose output is
 ## Installation
 Type `./configure` and `make`.  If everything was successful, type `make check`.
 
-## Status
-
-This is an initial work, expect bugs and (especially) missing features
-and possibly some instability, at least in binary compatibility.
-Source code compatibility should be fine.
 
 ## Modifying the code
 
