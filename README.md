@@ -10,9 +10,6 @@ This is an initial work, expect bugs and (especially) missing features
 and possibly some instability, at least in binary compatibility.
 Source code compatibility should be fine.
 
-There are currently known issues with memory leaks due to issues with
-finalization.
-
 ## Compiler requirements
 As of now, you need a compiler which supports `ERROR STOP for the
 testsuite.

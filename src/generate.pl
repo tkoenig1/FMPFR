@@ -186,8 +186,7 @@ module fmpfr_oper
   implicit none
   private
   type fmpfr
-    type (mpfr_t) :: mp
-    logical :: initialized = .false.
+    type (mpfr_t), allocatable :: mp
   contains
     final :: fmpfr_cleanup
   end type fmpfr
@@ -387,7 +386,8 @@ sub handle_stuff
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present($vars[$i_rnd])) rnd_val = $vars[$i_rnd]
-      if (.not. $vars[0]%initialized) then
+      if (.not. allocated ($vars[0]%mp)) then
+        allocate ($vars[0]%mp)
 EOF
     for my $val (@mpfr_ops) {
 	$olines .= "        prec_$vars[$val] = mpfr_get_prec ($vars[$val]%mp)\n";
@@ -484,7 +484,7 @@ sub handle_intrinsic
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present($vars[$i_rnd])) rnd_val = $vars[$i_rnd]
-      if (.not. $vars[0]%initialized) then
+      if (.not. allocated($vars[0]%mp)) then
 EOF
     for my $val (@mpfr_ops) {
 	$olines .= "        prec_$vars[$val] = mpfr_get_prec ($vars[$val]%mp)\n";
@@ -658,9 +658,9 @@ sub handle_rop_assign
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present($vars[$i_rnd])) rnd_val = $vars[$i_rnd]
-      if (.not. $vars[0]%initialized) then
+      if (.not. allocated($vars[0]%mp)) then
+        allocate ($vars[0]%mp)
         call mpfr_init2 ($vars[0]%mp, default_prec)
-        $vars[0]%initialized = .true.
       end if
 EOF
     $nlines .= "      call f$name (";
@@ -693,9 +693,9 @@ EOF
     }
     $nlines .= <<"EOF";
 
-      if (.not. rop%initialized) then
+      if (.not. allocated($vars[0]%mp)) then
+        allocate ($vars[0]%mp)
         call mpfr_init2 ($vars[0]%mp, default_prec)
-        $vars[0]%initialized = .true.
       end if
 EOF
     $nlines .= "      call f$name (" . join(", ",@alist[0..$#alist-1],"default_rnd") . ")\n";
@@ -744,9 +744,9 @@ sub conv_type_ass
     $ftype{$from} :: tmp_op;
 
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call f$name (rop%mp, tmp_op, default_rnd)
   end subroutine $xname
@@ -764,9 +764,9 @@ EOF
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call f$name (rop%mp, tmp_op, rnd_val)
   end function $yname
@@ -859,9 +859,9 @@ sub misc_routines
 
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+       allocate (rop%mp)
        call mpfr_init2 (rop%mp, default_prec)
-       rop%initialized = .true.
      end if
 
     allocate (s_arg(len(s)+1))
@@ -985,24 +985,24 @@ sub misc_routines
     type (fmpfr), intent(inout) :: rop
     type (fmpfr), intent(in) :: op
 
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, max(default_prec, op%mp%mpfr_prec))
-      rop%initialized = .true.
     end if
     call fmpfr_set (rop%mp, op%mp, default_rnd)    
   end subroutine ass_set
 
   elemental subroutine fmpfr_cleanup (self)
     type (fmpfr), intent(inout) :: self
-    if (self%initialized) call mpfr_clear(self%mp)
-    self%initialized = .false.
+    if (allocated(self%mp)) call mpfr_clear(self%mp)
   end subroutine fmpfr_cleanup
 
   elemental subroutine init_default (op)
     type (fmpfr), intent(inout) :: op
-    if (op%initialized) then
+    if (allocated(op%mp)) then
       call mpfr_set_prec (op%mp, default_prec)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, default_prec)
     end if
   end subroutine init_default
@@ -1041,9 +1041,10 @@ sub call_init
     integer (c_$type), intent(in) :: prec
     integer (mpfr_prec_kind) :: prec_val
     prec_val = prec
-    if (op%initialized) then
+    if (allocated (op%mp)) then
       call mpfr_set_prec (op%mp, prec_val)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, prec_val)
     end if
    end subroutine init_$type
@@ -1065,9 +1066,8 @@ sub call_init
     prec_val = prec
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
        call mpfr_init2 (rop%mp, prec_val)
-       rop%initialized = .true.
      end if
     
     allocate (s_arg(len(s)+1))

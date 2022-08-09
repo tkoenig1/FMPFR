@@ -28,8 +28,7 @@ module fmpfr_oper
   implicit none
   private
   type fmpfr
-    type (mpfr_t) :: mp
-    logical :: initialized = .false.
+    type (mpfr_t), allocatable :: mp
   contains
     final :: fmpfr_cleanup
   end type fmpfr
@@ -726,9 +725,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set (rop%mp, op%mp, rnd_val)
     end function fun_set
@@ -741,9 +740,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_si (rop%mp, op, rnd_val)
     end function fun_set_si
@@ -752,9 +751,9 @@ contains
       type (fmpfr), intent(inout) :: rop
       integer (c_long), intent(in) :: op
 
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_si (rop%mp, op, default_rnd)
     end subroutine ass_set_si
@@ -766,9 +765,9 @@ contains
     integer (c_long) :: tmp_op;
 
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_int
@@ -782,9 +781,9 @@ contains
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call fmpfr_set_si (rop%mp, tmp_op, rnd_val)
   end function fun_set_si_int
@@ -795,9 +794,9 @@ contains
     integer (c_long) :: tmp_op;
 
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call fmpfr_set_si (rop%mp, tmp_op, default_rnd)
   end subroutine ass_set_si_short
@@ -811,9 +810,9 @@ contains
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
     tmp_op = op;
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, default_prec)
-      rop%initialized = .true.
     end if
     call fmpfr_set_si (rop%mp, tmp_op, rnd_val)
   end function fun_set_si_short
@@ -825,9 +824,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_flt (rop%mp, op, rnd_val)
     end function fun_set_flt
@@ -836,9 +835,9 @@ contains
       type (fmpfr), intent(inout) :: rop
       real (c_float), intent(in) :: op
 
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_flt (rop%mp, op, default_rnd)
     end subroutine ass_set_flt
@@ -851,9 +850,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_d (rop%mp, op, rnd_val)
     end function fun_set_d
@@ -862,9 +861,9 @@ contains
       type (fmpfr), intent(inout) :: rop
       real (c_double), intent(in) :: op
 
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_d (rop%mp, op, default_rnd)
     end subroutine ass_set_d
@@ -878,9 +877,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_ld (rop%mp, op, rnd_val)
     end function fun_set_ld
@@ -889,9 +888,9 @@ contains
       type (fmpfr), intent(inout) :: rop
       real (c_long_double), intent(in) :: op
 
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_ld (rop%mp, op, default_rnd)
     end subroutine ass_set_ld
@@ -906,9 +905,9 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_float128 (rop%mp, op, rnd_val)
     end function fun_set_float128
@@ -917,9 +916,9 @@ contains
       type (fmpfr), intent(inout) :: rop
       real (qp), intent(in) :: op
 
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
+        allocate (rop%mp)
         call mpfr_init2 (rop%mp, default_prec)
-        rop%initialized = .true.
       end if
       call fmpfr_set_float128 (rop%mp, op, default_rnd)
     end subroutine ass_set_float128
@@ -1023,7 +1022,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -1049,7 +1049,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1139,7 +1140,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1197,7 +1199,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -1223,7 +1226,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         call mpfr_init2 (rop%mp, prec_op2)
       end if
@@ -1284,7 +1288,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1345,7 +1350,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         call mpfr_init2 (rop%mp, prec_op2)
       end if
@@ -1386,7 +1392,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1427,7 +1434,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -1453,7 +1461,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1543,7 +1552,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1601,7 +1611,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -1627,7 +1638,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         call mpfr_init2 (rop%mp, prec_op2)
       end if
@@ -1688,7 +1700,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1749,7 +1762,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         call mpfr_init2 (rop%mp, prec_op2)
       end if
@@ -1790,7 +1804,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -1830,7 +1845,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -1845,7 +1860,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -1938,7 +1953,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -1953,7 +1968,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -1968,7 +1983,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -1984,7 +1999,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -2010,7 +2026,8 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated (rop%mp)) then
+        allocate (rop%mp)
         prec_op1 = mpfr_get_prec (op1%mp)
         call mpfr_init2 (rop%mp, prec_op1)
       end if
@@ -2070,7 +2087,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2085,7 +2102,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2100,7 +2117,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2115,7 +2132,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2130,7 +2147,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2145,7 +2162,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2161,7 +2178,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_y = mpfr_get_prec (y%mp)
         prec_x = mpfr_get_prec (x%mp)
         prec = max (prec_y, prec_x)
@@ -2178,7 +2195,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op = mpfr_get_prec (op%mp)
         call mpfr_init2 (rop%mp, prec_op)
       end if
@@ -2194,7 +2211,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -2212,7 +2229,7 @@ contains
       integer (c_int) :: rnd_val
       rnd_val = default_rnd
       if (present(rnd)) rnd_val = rnd
-      if (.not. rop%initialized) then
+      if (.not. allocated(rop%mp)) then
         prec_op1 = mpfr_get_prec (op1%mp)
         prec_op2 = mpfr_get_prec (op2%mp)
         prec = max (prec_op1, prec_op2)
@@ -2230,9 +2247,9 @@ contains
 
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+       allocate (rop%mp)
        call mpfr_init2 (rop%mp, default_prec)
-       rop%initialized = .true.
      end if
 
     allocate (s_arg(len(s)+1))
@@ -2356,24 +2373,24 @@ contains
     type (fmpfr), intent(inout) :: rop
     type (fmpfr), intent(in) :: op
 
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
+      allocate (rop%mp)
       call mpfr_init2 (rop%mp, max(default_prec, op%mp%mpfr_prec))
-      rop%initialized = .true.
     end if
     call fmpfr_set (rop%mp, op%mp, default_rnd)    
   end subroutine ass_set
 
   elemental subroutine fmpfr_cleanup (self)
     type (fmpfr), intent(inout) :: self
-    if (self%initialized) call mpfr_clear(self%mp)
-    self%initialized = .false.
+    if (allocated(self%mp)) call mpfr_clear(self%mp)
   end subroutine fmpfr_cleanup
 
   elemental subroutine init_default (op)
     type (fmpfr), intent(inout) :: op
-    if (op%initialized) then
+    if (allocated(op%mp)) then
       call mpfr_set_prec (op%mp, default_prec)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, default_prec)
     end if
   end subroutine init_default
@@ -2389,9 +2406,10 @@ contains
     integer (c_long), intent(in) :: prec
     integer (mpfr_prec_kind) :: prec_val
     prec_val = prec
-    if (op%initialized) then
+    if (allocated (op%mp)) then
       call mpfr_set_prec (op%mp, prec_val)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, prec_val)
     end if
    end subroutine init_long
@@ -2413,9 +2431,8 @@ contains
     prec_val = prec
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
        call mpfr_init2 (rop%mp, prec_val)
-       rop%initialized = .true.
      end if
     
     allocate (s_arg(len(s)+1))
@@ -2443,9 +2460,10 @@ contains
     integer (c_int), intent(in) :: prec
     integer (mpfr_prec_kind) :: prec_val
     prec_val = prec
-    if (op%initialized) then
+    if (allocated (op%mp)) then
       call mpfr_set_prec (op%mp, prec_val)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, prec_val)
     end if
    end subroutine init_int
@@ -2467,9 +2485,8 @@ contains
     prec_val = prec
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
        call mpfr_init2 (rop%mp, prec_val)
-       rop%initialized = .true.
      end if
     
     allocate (s_arg(len(s)+1))
@@ -2497,9 +2514,10 @@ contains
     integer (c_short), intent(in) :: prec
     integer (mpfr_prec_kind) :: prec_val
     prec_val = prec
-    if (op%initialized) then
+    if (allocated (op%mp)) then
       call mpfr_set_prec (op%mp, prec_val)
     else
+      allocate (op%mp)
       call mpfr_init2 (op%mp, prec_val)
     end if
    end subroutine init_short
@@ -2521,9 +2539,8 @@ contains
     prec_val = prec
     rnd_val = default_rnd
     if (present(rnd)) rnd_val = rnd
-    if (.not. rop%initialized) then
+    if (.not. allocated(rop%mp)) then
        call mpfr_init2 (rop%mp, prec_val)
-       rop%initialized = .true.
      end if
     
     allocate (s_arg(len(s)+1))
